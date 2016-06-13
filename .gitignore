@@ -1,0 +1,8 @@
+target
+*.iml
+*.ipr
+*.iws
+.idea/*
+META-INF/*
+projectFilesBackup/*
+
