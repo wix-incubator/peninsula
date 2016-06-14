@@ -1,3 +1,4 @@
+# Peninsula
 Peninsula is a lightweight scala library enabling you to do json transformations without every converting your jsons into domain objects. Its main goal is to make building [coast-to-coast](http://mandubian.com/2013/01/13/JSON-Coast-to-Coast/) applications an easier and a more intuitive process.
 
 It's also a collection of useful tools for working with Json AST.
