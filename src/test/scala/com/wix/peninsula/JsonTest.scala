@@ -58,47 +58,73 @@ class JsonTest extends SpecificationWithJUnit {
       jsonResult must_== Json.parse("""{"username": "hello", "surname": "goodbye"}""")
     }
 
-    "translate simple json" in {
-      val json = Json.parse("""{"id": 1, "person": {"name": "hello", "lastName": "goodbye"} }""")
-      val translation = Json.parse("""{"name": "hello translated", "lastName": "goodbye translated"}""")
+    "Translation with transformation config" should {
+      "translate simple json" in {
+        val json = Json.parse("""{"id": 1, "person": {"name": "hello", "lastName": "goodbye"} }""")
+        val translation = Json.parse("""{"name": "hello translated", "lastName": "goodbye translated"}""")
 
-      val config = TransformationConfig(copyConfigs = Seq(
-        copyField("name", "person.name"),
-        copyField("lastName", "person.lastName")
-      ))
+        val config = TransformationConfig(copyConfigs = Seq(
+          copyField("name", "person.name"),
+          copyField("lastName", "person.lastName")
+        ))
 
-      json.translate(translation, config) must_== Json.parse("""{"id": 1, "person": {"name": "hello translated", "lastName": "goodbye translated"} }""")
-    }
+        json.translate(translation, config) must_== Json.parse("""{"id": 1, "person": {"name": "hello translated", "lastName": "goodbye translated"} }""")
+      }
 
-    "not translate field if translation not available for it" in {
-      val json = Json.parse("""{"id": 1, "person": {"name": "hello", "lastName": "goodbye"} }""")
-      val translation = Json.parse("""{"name": "hello translated"}""")
+      "not translate field if translation not available for it" in {
+        val json = Json.parse("""{"id": 1, "person": {"name": "hello", "lastName": "goodbye"} }""")
+        val translation = Json.parse("""{"name": "hello translated"}""")
 
-      val config = TransformationConfig(copyConfigs = Seq(
-        copyField("name", "person.name"),
-        copyField("lastName", "person.lastName")
-      ))
+        val config = TransformationConfig(copyConfigs = Seq(
+          copyField("name", "person.name"),
+          copyField("lastName", "person.lastName")
+        ))
 
-      json.translate(translation, config) must_== Json.parse("""{"id": 1, "person": {"name": "hello translated", "lastName": "goodbye"} }""")
-    }
+        json.translate(translation, config) must_== Json.parse("""{"id": 1, "person": {"name": "hello translated", "lastName": "goodbye"} }""")
+      }
 
-    "translate nested json" in {
-      val json1 = Json.parse("""{"app": {"id": 1, "dev": "facebook"}, "name": "hello", "lastName": "goodbye"}""")
-      val json2 = Json.parse("""{"app": {"dev": "google"}, "name": "hello translated", "lastName": "goodbye translated"}""")
+      "translate nested json" in {
+        val json1 = Json.parse("""{"app": {"id": 1, "dev": "facebook"}, "name": "hello", "lastName": "goodbye"}""")
+        val json2 = Json.parse("""{"app": {"dev": "google"}, "name": "hello translated", "lastName": "goodbye translated"}""")
 
-      val config = TransformationConfig(copyConfigs = Seq(
-        copyField("app.dev"),
-        copyField("name"),
-        copyField("lastName")
-      ))
+        val config = TransformationConfig(copyConfigs = Seq(
+          copyField("app.dev"),
+          copyField("name"),
+          copyField("lastName")
+        ))
 
-      json1.translate(json2, config) must_== Json.parse(
-        """
+        json1.translate(json2, config) must_== Json.parse(
+          """
            {"app": {"id": 1, "dev": "google"},
             "name": "hello translated",
             "lastName": "goodbye translated"}
-        """)
+          """)
+      }
     }
+
+    "Translation without transformation config" should {
+      "translate simple key-value json" in {
+        Json.parse("""{"name": "John"}""")
+          .translate(Json.parse("""{"name": "James"}""")) must_== Json.parse(
+          """{"name": "James"}"""
+        )
+      }
+
+      "merge in new fields" in {
+        Json.parse("""{"name": "John"}""")
+          .translate(Json.parse("""{"surname": "Doe"}""")) must_== Json.parse(
+          """{"name": "John", "surname": "Doe"}"""
+        )
+      }
+
+      "replace values in arrays" in {
+        Json.parse("""{"numbers": [1, 2]}""")
+          .translate(Json.parse("""{"numbers": [3, 4]}""")) must_== Json.parse(
+          """{"numbers": [3, 4]}"""
+        )
+      }
+    }
+
 
     "extract objects by id map correctly" in {
       val json = Json.parse("""[{"id": 1, "dev": "f"}, {"id": 2, "dev": "g"}]""")

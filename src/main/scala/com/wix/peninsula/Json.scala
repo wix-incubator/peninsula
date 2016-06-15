@@ -111,6 +111,24 @@ case class Json(node: JValue = JObject()) {
     }
   }
 
+  def translate(json: Json): Json = {
+    def mergeFields(left: List[JField], right: List[JField]): List[JField] = left match {
+      case Nil => right
+      case (lKey, lVal) :: xs => right find (_._1 == lKey) match {
+        case Some((rKey, rVal)) => JField(lKey, merge(lVal, rVal)) :: mergeFields(xs, right diff List((rKey, rVal)))
+        case None => JField(lKey, lVal) :: mergeFields(xs, right)
+      }
+    }
+
+    def merge(lVal: JValue, rVal: JValue): JValue = (lVal, rVal) match {
+      case (JObject(lFields), JObject(rFields)) => JObject(mergeFields(lFields, rFields))
+      case (left, JNothing) => left
+      case (_, right) => right
+    }
+
+    Json(merge(this.node, json.node))
+  }
+
   def setIfValuePresent(toPath: String, value: Json) = {
     if (value.node != JNothing) this.remove(toPath).set(toPath, value)
     else this
