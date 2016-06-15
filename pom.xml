@@ -37,6 +37,14 @@
   </scm>
 
 
+  <licenses>
+    <license>
+      <name>BSD License</name>
+      <url>http://www.opensource.org/licenses/bsd-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  
   <properties>
     <scala.dependencies.version>2.11</scala.dependencies.version>
     <scala.library.version>2.11.7</scala.library.version>
