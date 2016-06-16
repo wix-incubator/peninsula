@@ -6,6 +6,7 @@ It's also a collection of useful tools for working with Json AST.
 Peninsula is an abstraction layer on top of [Json4s](https://github.com/json4s/json4s).
 
 ## Examples
+
 #### Basic Json Transformation
 Build a transformation configuration to describe the rules that later can be used
 for transforming one json into another. TransformationConfig represents a collection
@@ -49,6 +50,7 @@ res0: com.wixpress.peninsula.Json =
 	}
 }
 ```
+
 #### A More Avanced Json Transformation
 ```scala
 
@@ -89,12 +91,94 @@ res: com.wix.peninsula.Json =
 	"id" : 1,
 	"name" : "Raw metal gym",
 	"description" : "The best gym in town. Come and visit us today!",
-  	"media" : {
-		"pictures" : {
-      		"headerBackground" : "https://images/top.jpg"
-	}
-  }
+	  "media" : {
+	    "pictures" : {
+	      "headerBackground" : "https://images/top.jpg"
+	    }
+	  }
 }
+```
+#### Json Translation
+```scala
+
+scala> val json = Json.parse(
+	"""
+	{  
+	   "id":1,
+	   "slug":"raw-metal",
+	   "name":"Raw Metal Gym",
+	   "images":{  
+	      "top":"//images/top.jpg",
+	      "background":"//images/background.png"
+	   }
+	}
+	""")
+
+scala> val translation = Json.parse(
+	"""
+	{  
+	   "name":"Metalinis Gymas",
+	   "images":{  
+	      "background":"//images/translated-background.png"
+	   }
+	}
+	""")
+
+scala> json.translate(config)
+res: com.wixpress.peninsula.Json =
+{
+	"id": 1,
+	"slug": "raw-metal",
+	"name":"Metalinis Gymas",
+	"images": {
+		"top": "//images/top.jpg",
+		"background":"//images/translated-background.png"
+	}
+}
+
+```
+#### Custom Json Translation
+
+```scala
+scala> val json = Json.parse(
+	"""
+	{  
+	   "id":1,
+	   "slug":"raw-metal",
+	   "name":"Raw Metal Gym",
+	   "images":{  
+	      "top":"//images/top.jpg",
+	      "background":"//images/background.png"
+	   }
+	}
+	""")
+
+scala> val translation = Json.parse(
+	"""
+	{  
+	   "title":"Metalinis Gymas",
+	   "media":{  
+	      "backgroundImage":"//images/translated-background.png"
+	   }
+	}
+	""")
+
+scala> val config = TransformationConfig()
+						.add(copyField("title" -> "name"))
+						.add(copyField("media.backgroundImage" -> "images.background"))
+
+scala> json.translate(translation, config)
+res: com.wixpress.peninsula.Json =
+{
+	"id": 1,
+	"slug": "raw-metal",
+	"name":"Metalinis Gymas",
+	"images": {
+		"top": "//images/top.jpg",
+		"background":"//images/translated-background.png"
+	}
+}
+
 ```
 
 #### Extraction
