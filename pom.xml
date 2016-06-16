@@ -78,6 +78,16 @@
               <goal>testCompile</goal>
             </goals>
           </execution>
+          <execution>
+            <id>attach-javadocs</id>
+            <configuration>
+              <failOnError>false</failOnError>
+            </configuration>
+            <goals>
+              <goal>doc</goal>
+              <goal>doc-jar</goal>
+            </goals>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -135,12 +145,6 @@
           <plugin>
             <artifactId>maven-javadoc-plugin</artifactId>
             <executions>
-              <execution>
-                <id>attach-javadocs</id>
-                <goals>
-                  <goal>jar</goal>
-                </goals>
-              </execution>
               <execution>
                 <id>package-javadoc</id>
                 <phase>package</phase>
