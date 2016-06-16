@@ -23,9 +23,9 @@ import com.wix.peninsula.CopyConfigFactory._
 import com.wix.peninsula._
 
 val config = TransformationConfig()
-            .add(copyFields("id", "slug"))
-            .add(copyField("name" -> "title"))
-            .add(copy("images"))
+  .add(copyFields("id", "slug"))
+  .add(copyField("name" -> "title"))
+  .add(copy("images"))
 
 val json = Json.parse(
   """
@@ -221,7 +221,7 @@ import com.wix.peninsula.Json
 
 val json = Json.parse("""{"id": 1, "name": "John", "office": "Wix Townhall", "role": "Engineer"}""")
 
-json.only(Set("id", "role")).compactRender
+json.only(Set("id", "role"))
 result: com.wix.peninsula.Json =
 {
   "id" : 1,
