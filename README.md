@@ -61,11 +61,11 @@ import com.wix.peninsula.JsonValidators.NonEmptyStringValidator
 import org.json4s.JsonAST.JString
 
 object HttpsAppender extends JsonMapper {
-      override def map(json: Json): Json = Json(json.node match {
-        case JString(url) => JString("https:" + url)
-        case x => x
-      })
-    }
+  override def map(json: Json): Json = Json(json.node match {
+    case JString(url) => JString("https:" + url)
+    case x => x
+  })
+}
 
 val config = TransformationConfig()
   .add(copyField("id"))
