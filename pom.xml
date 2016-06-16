@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>peninsula</artifactId>
-  <version>0.1.6-SNAPSHOT</version>
+  <version>0.1.6</version>
   <packaging>jar</packaging>
   <name>Peninsula</name>
   <description>Coast2coast json lib</description>
@@ -37,7 +37,7 @@
     <connection>scm:git:git@github.com:wix/peninsula.git</connection>
     <developerConnection>scm:git:git@github.com:wix/peninsula.git</developerConnection>
     <url>git@github.com:wix/peninsula.git</url>
-    <tag>HEAD</tag>
+    <tag>0.1.6</tag>
   </scm>
 
   <licenses>
