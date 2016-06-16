@@ -125,7 +125,6 @@ class JsonTest extends SpecificationWithJUnit {
       }
     }
 
-
     "extract objects by id map correctly" in {
       val json = Json.parse("""[{"id": 1, "dev": "f"}, {"id": 2, "dev": "g"}]""")
 
@@ -136,11 +135,9 @@ class JsonTest extends SpecificationWithJUnit {
 
     "translate arrays by id json" in {
       val json = Json.parse(
-        """{"apps": [{"id": 1, "dev": "facebook", "name": "facebook like"}, {"id": 2, "dev": "google"}],
-           |"collection": "hh"}""".stripMargin)
+        """{"apps": [{"id": 1, "dev": "facebook", "name": "facebook like"}, {"id": 2, "dev": "google"}], "collection": "hh"}""")
       val translation = Json.parse(
-        """{"collection": "a proper haha",
-           |"apps": [{"id": 2, "dev": "gūglas"}, {"id": 1, "dev": "veidaknygė"}]}""".stripMargin)
+        """{"collection": "a proper haha", "apps": [{"id": 2, "dev": "gūglas"}, {"id": 1, "dev": "veidaknygė"}]}""")
 
       val appConfig = TransformationConfig(copyConfigs = Seq(
         copyField("id"),
@@ -154,8 +151,8 @@ class JsonTest extends SpecificationWithJUnit {
       
       json.translate(translation, config) must_== Json.parse(
         """{"collection": "a proper haha",
-          | "apps": [{"id": 1, "name": "facebook like", "dev": "veidaknygė"}, {"id": 2, "dev": "gūglas"}]
-          |}""".stripMargin
+           "apps": [{"id": 1, "name": "facebook like", "dev": "veidaknygė"}, {"id": 2, "dev": "gūglas"}]
+          }"""
       )
     }
 

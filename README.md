@@ -19,185 +19,197 @@ In the example below `copyFields("id", "slug")` copies 2 fields id and slug as t
 `copy("images")` copies the *images* field into the resulting json without making any assumptions about the value type. i.e. images value can be an object or an array.
 
 ```scala
-
-scala> val config = TransformationConfig()
-						.add(copyFields("id", "slug"))
-						.add(copyField("name" -> "title"))
-						.add(copy("images"))
-
-scala> val json = Json.parse(
-	"""
-	{  
-	   "id":1,
-	   "slug":"raw-metal",
-	   "name":"Raw Metal Gym",
-	   "images":{  
-	      "top":"//images/top.jpg",
-	      "background":"//images/background.png"
-	   }
-	}
-	""")
-
-scala> json.transform(config)
-res0: com.wixpress.peninsula.Json =
-{
-	"id": 1,
-	"slug": "raw-metal",
-	"name": "Raw Metal Gym",
-	"images": {
-		"top": "//images/top.jpg",
-		"background": "//images/background.png"
-	}
-}
-```
-
-#### A More Avanced Json Transformation
-```scala
-
-scala> object HttpsAppender extends JsonMapper {
-			override def map(json: Json): Json = Json(json.node match {
-				case JString(url) => JString("https:" + url)
-				case x => x
-			})
-		}
+import com.wix.peninsula.CopyConfigFactory._
+import com.wix.peninsula._
 
 val config = TransformationConfig()
-	.add(copyField("id"))
-	.add(mergeObject("texts"))
-	.add(copyField("images.top" -> "media.pictures.headerBackground")
-		.withValidators(NonEmptyStringValidator)
-		.withMapper(HttpsAppender))
+            .add(copyFields("id", "slug"))
+            .add(copyField("name" -> "title"))
+            .add(copy("images"))
 
-scala> val json = Json.parse(
-	"""
-	{  
-	   "id":1,
-	   "slug":"raw-metal",
-	   "name":"Raw Metal Gym",
-		 "texts": {
-			 "name": "Raw metal gym",
-			 "description": "The best gym in town. Come and visit us today!"
-		 },
-	   "images":{  
-	      "top":"//images/top.jpg",
-	      "background":"//images/background.png"
-	   }
-	}
-	""")
+val json = Json.parse(
+  """
+  {  
+     "id":1,
+     "slug":"raw-metal",
+     "name":"Raw Metal Gym",
+     "images":{  
+        "top":"//images/top.jpg",
+        "background":"//images/background.png"
+     }
+  }
+  """)
 
-scala> json.transform(config)
-res: com.wix.peninsula.Json =
+json.transform(config)
+com.wix.peninsula.Json =
 {
-	"id" : 1,
-	"name" : "Raw metal gym",
-	"description" : "The best gym in town. Come and visit us today!",
-	  "media" : {
-	    "pictures" : {
-	      "headerBackground" : "https://images/top.jpg"
-	    }
-	  }
+  "id": 1,
+  "slug": "raw-metal",
+  "title": "Raw Metal Gym",
+  "images": {
+    "top": "//images/top.jpg",
+    "background": "//images/background.png"
+  }
 }
 ```
-#### Json Translation
+
+#### A More Advanced Json Transformation
 ```scala
+import com.wix.peninsula._
+import com.wix.peninsula.CopyConfigFactory._
+import com.wix.peninsula.JsonValidators.NonEmptyStringValidator
+import org.json4s.JsonAST.JString
 
-scala> val json = Json.parse(
-	"""
-	{  
-	   "id":1,
-	   "slug":"raw-metal",
-	   "name":"Raw Metal Gym",
-	   "images":{  
-	      "top":"//images/top.jpg",
-	      "background":"//images/background.png"
-	   }
-	}
-	""")
+object HttpsAppender extends JsonMapper {
+      override def map(json: Json): Json = Json(json.node match {
+        case JString(url) => JString("https:" + url)
+        case x => x
+      })
+    }
 
-scala> val translation = Json.parse(
-	"""
-	{  
-	   "name":"Metalinis Gymas",
-	   "images":{  
-	      "background":"//images/translated-background.png"
-	   }
-	}
-	""")
+val config = TransformationConfig()
+  .add(copyField("id"))
+  .add(mergeObject("texts"))
+  .add(copyField("images.top" -> "media.pictures.headerBackground")
+    .withValidators(NonEmptyStringValidator)
+    .withMapper(HttpsAppender))
 
-scala> json.translate(config)
-res: com.wixpress.peninsula.Json =
+val json = Json.parse(
+  """
+  {  
+     "id":1,
+     "slug":"raw-metal",
+     "name":"Raw Metal Gym",
+     "texts": {
+       "name": "Raw metal gym",
+       "description": "The best gym in town. Come and visit us today!"
+     },
+     "images":{
+        "top":"//images/top.jpg",
+        "background":"//images/background.png"
+     }
+  }
+  """)
+
+json.transform(config)
+result: com.wix.peninsula.Json =
 {
-	"id": 1,
-	"slug": "raw-metal",
-	"name":"Metalinis Gymas",
-	"images": {
-		"top": "//images/top.jpg",
-		"background":"//images/translated-background.png"
-	}
+  "id" : 1,
+  "name" : "Raw metal gym",
+  "description" : "The best gym in town. Come and visit us today!",
+    "media" : {
+      "pictures" : {
+        "headerBackground" : "https://images/top.jpg"
+      }
+    }
 }
+```
 
+#### Basic Json Translation
+```scala
+import com.wix.peninsula._
+
+val json = Json.parse(
+  """
+  {
+    "id":1,
+    "slug":"raw-metal",
+    "name":"Raw Metal Gym",
+    "images":{
+      "top":"//images/top.jpg",
+      "background":"//images/background.png"
+    }
+  }
+  """)
+
+val config = Json.parse(
+  """
+  {
+    "name":"Metalinis Gymas",
+    "images":{
+      "background":"//images/translated-background.png"
+    }
+  }
+  """)
+
+json.translate(config)
+
+result: com.wix.peninsula.Json =
+{
+  "id": 1,
+  "slug": "raw-metal",
+  "name":"Metalinis Gymas",
+  "images": {
+    "top": "//images/top.jpg",
+    "background":"//images/translated-background.png"
+  }
+}
 ```
 #### Custom Json Translation
 
 ```scala
-scala> val json = Json.parse(
-	"""
-	{  
-	   "id":1,
-	   "slug":"raw-metal",
-	   "name":"Raw Metal Gym",
-	   "images":{  
-	      "top":"//images/top.jpg",
-	      "background":"//images/background.png"
-	   }
-	}
-	""")
+import com.wix.peninsula._
+import com.wix.peninsula.CopyConfigFactory._
 
-scala> val translation = Json.parse(
-	"""
-	{  
-	   "title":"Metalinis Gymas",
-	   "media":{  
-	      "backgroundImage":"//images/translated-background.png"
-	   }
-	}
-	""")
+val json = Json.parse(
+  """
+  {
+     "id":1,
+     "slug":"raw-metal",
+     "name":"Raw Metal Gym",
+     "images":{
+        "top":"//images/top.jpg",
+        "background":"//images/background.png"
+     }
+  }
+  """)
 
-scala> val config = TransformationConfig()
-						.add(copyField("title" -> "name"))
-						.add(copyField("media.backgroundImage" -> "images.background"))
+val translation = Json.parse(
+  """
+  {
+     "title":"Metalinis Gymas",
+     "media":{
+        "backgroundImage":"//images/translated-background.png"
+     }
+  }
+  """)
 
-scala> json.translate(translation, config)
-res: com.wixpress.peninsula.Json =
+val config = TransformationConfig()
+  .add(copyField("title" -> "name"))
+  .add(copyField("media.backgroundImage" -> "images.background"))
+
+json.translate(translation, config)
+result: com.wix.peninsula.Json =
 {
-	"id": 1,
-	"slug": "raw-metal",
-	"name":"Metalinis Gymas",
-	"images": {
-		"top": "//images/top.jpg",
-		"background":"//images/translated-background.png"
-	}
+  "id": 1,
+  "slug": "raw-metal",
+  "name":"Metalinis Gymas",
+  "images": {
+    "top": "//images/top.jpg",
+    "background":"//images/translated-background.png"
+  }
 }
-
 ```
 
 #### Extraction
 Easily extract top level and nested values from json.
 
 ```scala
-scala> val json = Json.parse("""{"id": 1, "name": "John", "location": {"city": "Vilnius", "country": "LT"}}""")
+import com.wix.peninsula.Json
 
-scala> json.extractString("location.city")
-res: String = Vilnius
+val json = Json.parse("""{"id": 1, "name": "John", "location": {"city": "Vilnius", "country": "LT"}}""")
 
-scala> json.extractStringOpt("location.city")
-res: Option[String] = Some(Vilnius)
+json.extractString("location.city")
+result: String = Vilnius
 
-scala> json.extractStringOpt("location.postCode")
-res: Option[String] = None
+json.extractStringOpt("location.city")
+result: Option[String] = Some(Vilnius)
 
-scala> json.extractLong("id")
-res: Long = 1
+json.extractStringOpt("location.postCode")
+result: Option[String] = None
+
+json.extractLong("id")
+result: Long = 1
 ```
 
 #### Fields Filtering
@@ -205,12 +217,14 @@ Define which fields you want to be included into the resulting json and filter a
 This might get in handy for implementation of restful json endpoints.
 
 ```scala
-scala> val json = Json.parse("""{"id": 1, "name": "John", "office": "Wix Townhall", "role": "Engineer"}""")
+import com.wix.peninsula.Json
 
-scala> json.only(Set("id", "role")).compactRender
-res: com.wixpress.peninsula.Json =
+val json = Json.parse("""{"id": 1, "name": "John", "office": "Wix Townhall", "role": "Engineer"}""")
+
+json.only(Set("id", "role")).compactRender
+result: com.wix.peninsula.Json =
 {
   "id" : 1,
-  "role" : "Enginner"
+  "role" : "Engineer"
 }
 ```
