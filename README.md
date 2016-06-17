@@ -29,9 +29,9 @@ All examples below can also be found in the following test: [ExampleTest.scala](
 #### Basic Json Transformation
 Build a transformation configuration to describe the rules that later can be used
 for transforming one json into another. TransformationConfig represents a collection
-of copy configurations that each copyg one bit from the original json into the resulting json in a specific way.
+of copy configurations that each copy one bit from the original json into the resulting json in a specific way.
 
-In the example below `copyFields("id", "slug")` copies 2 fields id and slug as they are without making any changes to the property names of values. It expects the value to be a primitive type.
+In the example below `copyFields("id", "slug")` copies 2 fields *id* and *slug* as they are without making any changes to the property names of values. It expects the value to be a primitive type.
 
 `copyField("name" -> "title")` copies the name field - but renames the property to *title*.
 
