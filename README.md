@@ -5,7 +5,7 @@ It's also a collection of useful tools for working with Json AST.
 
 Peninsula is an abstraction layer on top of [Json4s](https://github.com/json4s/json4s).
 
-#### Installation
+## Installation
 Add the following dependency to your pom if you use maven
 ```xml
 <dependency>
@@ -168,30 +168,41 @@ import com.wix.peninsula.CopyConfigFactory._
 
 val json = Json.parse(
   """
-  {
-     "id":1,
-     "slug":"raw-metal",
-     "name":"Raw Metal Gym",
-     "images":{
-        "top":"//images/top.jpg",
-        "background":"//images/background.png"
-     }
-  }
+    {
+       "id":1,
+       "slug":"raw-metal",
+       "name":"Raw Metal Gym",
+       "images":{
+          "top":"//images/top.jpg",
+          "background":"//images/background.png"
+       },
+       "features": [
+          { "id": 1, "description": "Convenient location" },
+          { "id": 2, "description": "Lots of space" }
+       ]
+    }
   """)
 
 val translation = Json.parse(
   """
-  {
-     "title":"Metalinis Gymas",
-     "media":{
-        "backgroundImage":"//images/translated-background.png"
-     }
-  }
+    {
+       "title":"Metalinis Gymas",
+       "media": {
+          "backgroundImage":"//images/translated-background.png"
+       },
+       "features": [
+        { "id": 2, "description": "space translated" },
+        { "id": 1, "description": "location translated" }
+       ]
+    }
   """)
+
+val featureConfig = TransformationConfig().add(copyField("description"))
 
 val config = TransformationConfig()
   .add(copyField("title" -> "name"))
   .add(copyField("media.backgroundImage" -> "images.background"))
+  .add(copyArrayOfObjects(fromTo = "features", config = featureConfig, idField = "id"))
 
 json.translate(translation, config)
 result: com.wix.peninsula.Json =
@@ -202,7 +213,11 @@ result: com.wix.peninsula.Json =
   "images": {
     "top": "//images/top.jpg",
     "background":"//images/translated-background.png"
-  }
+  },
+  "features": [
+    { "id": 1, "description": "location translated" },
+    { "id": 2, "description": "space translated" }
+  ]
 }
 ```
 

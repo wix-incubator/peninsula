@@ -144,7 +144,11 @@ class ExamplesTest extends SpecificationWithJUnit {
            "images":{
               "top":"//images/top.jpg",
               "background":"//images/background.png"
-           }
+           },
+           "features": [
+              { "id": 1, "description": "Convenient location" },
+              { "id": 2, "description": "Lots of space" }
+           ]
         }
       """)
 
@@ -152,15 +156,22 @@ class ExamplesTest extends SpecificationWithJUnit {
       """
         {
            "title":"Metalinis Gymas",
-           "media":{
+           "media": {
               "backgroundImage":"//images/translated-background.png"
-           }
+           },
+           "features": [
+            { "id": 2, "description": "space translated" },
+            { "id": 1, "description": "location translated" }
+           ]
         }
       """)
+
+    val featureConfig = TransformationConfig().add(copyField("description"))
 
     val config = TransformationConfig()
       .add(copyField("title" -> "name"))
       .add(copyField("media.backgroundImage" -> "images.background"))
+      .add(copyArrayOfObjects(fromTo = "features", config = featureConfig, idField = "id"))
 
     json.translate(translation, config) must_== Json.parse(
       """
@@ -171,10 +182,15 @@ class ExamplesTest extends SpecificationWithJUnit {
           "images": {
             "top": "//images/top.jpg",
             "background":"//images/translated-background.png"
-          }
+          },
+          "features": [
+            { "id": 1, "description": "location translated" },
+            { "id": 2, "description": "space translated" }
+          ]
         }
       """)
   }
+
 
   "Extraction" in {
     import com.wix.peninsula.Json
