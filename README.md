@@ -5,7 +5,7 @@ Its main goal is to eventually make building data centric [coast-to-coast](http:
 
 Technically Peninsula is an abstraction layer on top of [Json4s](https://github.com/json4s/json4s).
 
-Dislaimer: even if it's used on production at Wix - this is an  early stage lib - with plenty of space for otimization and improvement. Contributions and comments are very welcome!
+Dislaimer: even if it's used on production at Wix - this is an  early stage lib - with plenty of space for optimization and improvement. Contributions and comments are very welcome!
 
 ## Installation
 Add the following dependency to your pom if you use maven
@@ -73,6 +73,13 @@ com.wix.peninsula.Json =
 ```
 
 #### A More Advanced Json Transformation
+
+In the below example the `mergeObject` copier merges anything in the object specified onto the top level of the resulting json.
+
+Nested properties can be accessed using dot based selectors e.g. `media.pictures.headerBackground`.
+
+Also note how json values can be validated and transformed before copying them over to the resulting json.
+
 ```scala
 import com.wix.peninsula._
 import com.wix.peninsula.CopyConfigFactory._
@@ -125,6 +132,10 @@ result: com.wix.peninsula.Json =
 ```
 
 #### Basic Json Translation
+
+Translation differs from transformation in that it keeps the original json and merges the translation on top it.
+In a basic case, when the translation and the original json have the same structure - no transformation config is needed.
+
 ```scala
 import com.wix.peninsula._
 
@@ -165,6 +176,8 @@ result: com.wix.peninsula.Json =
 }
 ```
 #### Custom Json Translation
+
+
 
 ```scala
 import com.wix.peninsula._
