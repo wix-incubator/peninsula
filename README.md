@@ -1,9 +1,11 @@
 # Peninsula
-Peninsula is a Scala library enabling you to do json transformations without ever converting your jsons into domain objects. Its main goal is to make building [coast-to-coast](http://mandubian.com/2013/01/13/JSON-Coast-to-Coast/) applications an easier and a more intuitive process.
+Peninsula is a Scala lib providing a colleciton of useful tools working with json AST and facilitating json transformations without ever converting your jsons into domain objects.
 
-It's also a collection of useful tools for working with Json AST.
+Its main goal is to eventually make building data centric [coast-to-coast](http://mandubian.com/2013/01/13/JSON-Coast-to-Coast/) applications an easier and a more intuitive process.
 
-Peninsula is an abstraction layer on top of [Json4s](https://github.com/json4s/json4s).
+Technically Peninsula is an abstraction layer on top of [Json4s](https://github.com/json4s/json4s).
+
+Dislaimer: even if it's used on production at Wix - this is an  early stage lib - with plenty of space for otimization and improvement. Contributions and comments are very welcome!
 
 ## Installation
 Add the following dependency to your pom if you use maven
