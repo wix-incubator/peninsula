@@ -5,6 +5,21 @@ It's also a collection of useful tools for working with Json AST.
 
 Peninsula is an abstraction layer on top of [Json4s](https://github.com/json4s/json4s).
 
+#### Installation
+Add the following dependency to your pom if you use maven
+```xml
+<dependency>
+    <groupId>com.wix</groupId>
+    <artifactId>peninsula</artifactId>
+    <version>0.1.5</version>
+</dependency>
+```
+For SBT users
+```scala
+val peninsula = "com.wix" % "peninsula" % "0.1.5"
+libraryDependencies += peninsula
+```
+
 ## Examples
 
 #### Basic Json Transformation
