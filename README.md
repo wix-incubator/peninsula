@@ -22,6 +22,8 @@ libraryDependencies += peninsula
 
 ## Examples
 
+All examples below can also be found in the following test: [ExampleTest.scala](https://github.com/wix/peninsula/blob/master/src/test/scala/com/wix/peninsula/examples/ExamplesTest.scala)
+
 #### Basic Json Transformation
 Build a transformation configuration to describe the rules that later can be used
 for transforming one json into another. TransformationConfig represents a collection
