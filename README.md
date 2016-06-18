@@ -1,5 +1,5 @@
 # Peninsula
-Peninsula is a Scala lib providing a colleciton of useful tools working with json AST and facilitating json transformations without ever converting your jsons into domain objects.
+Peninsula is a Scala lib providing a collection of useful tools working with json AST and facilitating json transformations without ever converting your jsons into domain objects.
 
 Its main goal is to eventually make building data centric [coast-to-coast](http://mandubian.com/2013/01/13/JSON-Coast-to-Coast/) applications an easier and a more intuitive process.
 
