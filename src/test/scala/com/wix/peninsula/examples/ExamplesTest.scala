@@ -6,6 +6,31 @@ import org.specs2.mutable.SpecificationWithJUnit
 
 class ExamplesTest extends SpecificationWithJUnit {
 
+  "Extraction" in {
+    import com.wix.peninsula.Json
+
+    val json = Json.parse("""{"id": 1, "name": "John", "location": {"city": "Vilnius", "country": "LT"}}""")
+
+    json.extractString("location.city") must_== "Vilnius"
+
+    json.extractStringOpt("location.city") must_== Some("Vilnius")
+
+    json.extractStringOpt("location.postCode") must_== None
+
+    json.extractLong("id") must_== 1L
+  }
+
+  "Extract case class from a sub object" in {
+    val json = Json.parse(
+      """{"location": "vilnius",
+          "customer": { "id": 1, "name": "John"},
+          "items": [{"name": "tomatoes"}, {"name": "snickers"}]}""")
+
+    json("customer").extract[Person]() mustEqual Person(id = 1, name = "John")
+
+    json("items").extract[Seq[Item]]() mustEqual Seq(Item(name = "tomatoes"), Item(name = "snickers"))
+  }
+
   "Basic Json transformation" in {
     import com.wix.peninsula._
     import com.wix.peninsula.CopyConfigFactory._
@@ -193,21 +218,6 @@ class ExamplesTest extends SpecificationWithJUnit {
       """)
   }
 
-
-  "Extraction" in {
-    import com.wix.peninsula.Json
-
-    val json = Json.parse("""{"id": 1, "name": "John", "location": {"city": "Vilnius", "country": "LT"}}""")
-
-    json.extractString("location.city") must_== "Vilnius"
-
-    json.extractStringOpt("location.city") must_== Some("Vilnius")
-
-    json.extractStringOpt("location.postCode") must_== None
-
-    json.extractLong("id") must_== 1L
-  }
-
   "Fields Filtering" in {
     import com.wix.peninsula.Json
 
@@ -222,22 +232,5 @@ class ExamplesTest extends SpecificationWithJUnit {
       """
     )
   }
-
-  "Extract case class from a sub object" in {
-    val json = Json.parse(
-      """{"location": "vilnius",
-          "customer": { "id": 1, "name": "John"},
-          "items": [{"name": "tomatoes"}, {"name": "snickers"}]}""")
-
-    json("customer").extract[Person]() mustEqual Person(id = 1, name = "John")
-
-    json("items").extract[Seq[Item]]() mustEqual Seq(Item(name = "tomatoes"), Item(name = "snickers"))
-  }
-
-
-
-
-
-
 
 }
