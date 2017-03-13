@@ -3,6 +3,7 @@ package com.wix.peninsula
 import com.wix.peninsula.exceptions.{JsonValidationException, UnexpectedJsonElementException}
 import CopyConfigFactory._
 import JsonValidators._
+import com.wix.peninsula.domain.Person
 import org.json4s.JsonAST._
 import org.json4s.jackson.JsonMethods._
 import org.specs2.mutable.SpecificationWithJUnit
@@ -148,7 +149,7 @@ class JsonTest extends SpecificationWithJUnit {
         copyArrayOfObjects("apps", appConfig, idField = "id"),
         copyField("collection")
       ))
-      
+
       json.translate(translation, config) must_== Json.parse(
         """{"collection": "a proper haha",
            "apps": [{"id": 1, "name": "facebook like", "dev": "veidaknygė"}, {"id": 2, "dev": "gūglas"}]
@@ -341,6 +342,18 @@ class JsonTest extends SpecificationWithJUnit {
       val json = Json.parse("""{"a": "string"}""")
 
       json.isObjectOfIntValues must beFalse
+    }
+
+    "Extract case class from an object" in {
+      val json = Json.parse("""{ "id": 1, "name": "Hello"}""")
+
+      json.extract[Person]() mustEqual Person(id = 1, name = "Hello")
+    }
+
+    "Extract a sequence of case classes from a json array" in {
+      val json = Json.parse("""[{ "id": 1, "name": "Hello"}, {"id": 2, "name": "Goodbye"}] """)
+
+      json.extract[Seq[Person]]() mustEqual Seq(Person(id = 1, name = "Hello"), Person(id = 2, name = "Goodbye"))
     }
 
   }

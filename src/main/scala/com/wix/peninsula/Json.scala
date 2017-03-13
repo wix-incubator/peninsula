@@ -31,6 +31,8 @@ case class Json(node: JValue = JObject()) {
   def extractLongOpt(path: String): Option[Long] =
     this(path).node.extractOpt[Long]
 
+  def extract[T: Manifest](): T = node.extract[T]
+
   def mapObjects[T](func: (Json) => T): List[T] = {
     val JArray(objects: List[JValue]) = this.node
     objects.map(o => func(Json(o)))

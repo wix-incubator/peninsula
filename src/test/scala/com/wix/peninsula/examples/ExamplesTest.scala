@@ -1,5 +1,7 @@
 package com.wix.peninsula.examples
 
+import com.wix.peninsula.Json
+import com.wix.peninsula.domain.{Item, Person}
 import org.specs2.mutable.SpecificationWithJUnit
 
 class ExamplesTest extends SpecificationWithJUnit {
@@ -219,6 +221,17 @@ class ExamplesTest extends SpecificationWithJUnit {
         }
       """
     )
+  }
+
+  "Extract case class from a sub object" in {
+    val json = Json.parse(
+      """{"location": "vilnius",
+          "customer": { "id": 1, "name": "John"},
+          "items": [{"name": "tomatoes"}, {"name": "snickers"}]}""")
+
+    json("customer").extract[Person]() mustEqual Person(id = 1, name = "John")
+
+    json("items").extract[Seq[Item]]() mustEqual Seq(Item(name = "tomatoes"), Item(name = "snickers"))
   }
 
 
