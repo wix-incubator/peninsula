@@ -26,6 +26,47 @@ libraryDependencies += peninsula
 
 All examples below can also be found in the following test: [ExampleTest.scala](https://github.com/wix/peninsula/blob/master/src/test/scala/com/wix/peninsula/examples/ExamplesTest.scala)
 
+#### Extraction
+Easily extract top level and nested values from json.
+
+```scala
+import com.wix.peninsula.Json
+
+val json = Json.parse("""{"id": 1, "name": "John", "location": {"city": "Vilnius", "country": "LT"}}""")
+
+json.extractString("location.city")
+result: String = Vilnius
+
+json.extractStringOpt("location.city")
+result: Option[String] = Some(Vilnius)
+
+json.extractStringOpt("location.postCode")
+result: Option[String] = None
+
+json.extractLong("id")
+result: Long = 1
+```
+
+Extract case class from a sub-object.
+
+```scala
+import com.wix.peninsula.Json
+
+case class Person(id: Long, name: String)
+case class Item(name: String)
+
+val json = Json.parse(
+  """{"location": "vilnius",
+      "customer": { "id": 1, "name": "John"},
+      "items": [{"name": "tomatoes"}, {"name": "snickers"}]}""")
+
+json("customer").extract[Person]()
+result: Person = Person(id = 1, name = "John")
+
+json("items").extract[Seq[Item]]()
+result: Seq[Item] = Seq(Item(name = "tomatoes"), Item(name = "snickers"))
+```
+
 #### Basic Json Transformation
 Build a transformation configuration to describe the rules that later can be used
 for transforming one json into another. TransformationConfig represents a collection
@@ -236,27 +277,6 @@ result: com.wix.peninsula.Json =
     { "id": 2, "description": "space translated" }
   ]
 }
-```
-
-#### Extraction
-Easily extract top level and nested values from json.
-
-```scala
-import com.wix.peninsula.Json
-
-val json = Json.parse("""{"id": 1, "name": "John", "location": {"city": "Vilnius", "country": "LT"}}""")
-
-json.extractString("location.city")
-result: String = Vilnius
-
-json.extractStringOpt("location.city")
-result: Option[String] = Some(Vilnius)
-
-json.extractStringOpt("location.postCode")
-result: Option[String] = None
-
-json.extractLong("id")
-result: Long = 1
 ```
 
 #### Fields Filtering
