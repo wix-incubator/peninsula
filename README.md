@@ -32,40 +32,43 @@ Easily extract top level and nested values from json.
 ```scala
 import com.wix.peninsula.Json
 
-val json = Json.parse("""{"id": 1, "name": "John", "location": {"city": "Vilnius", "country": "LT"}}""")
-
-json.extractString("location.city")
-result: String = Vilnius
-
-json.extractStringOpt("location.city")
-result: Option[String] = Some(Vilnius)
-
-json.extractStringOpt("location.postCode")
-result: Option[String] = None
-
-json.extractLong("id")
-result: Long = 1
-```
-
-Extract case class from a sub-object.
-
-```scala
-import com.wix.peninsula.Json
-
 case class Person(id: Long, name: String)
-case class Item(name: String)
+case class Item(name: String, sale: Boolean)
 
 val json = Json.parse(
-  """{"location": "vilnius",
+  """
+    {
+      "id": 1,
+      "name": "John",
+      "location": {"city": "Vilnius", "country": "LT"},
       "customer": { "id": 1, "name": "John"},
-      "items": [{"name": "tomatoes"}, {"name": "snickers"}]}""")
+      "items": [{"name": "tomatoes", "sale": true}, {"name": "snickers", "sale": false}]
+    }
+  """)
+  
+json.extractString("location.city") mustEqual "Vilnius"
+result: "Vilnius"
 
-json("customer").extract[Person]()
-result: Person = Person(id = 1, name = "John")
+json.extractStringOpt("location.city")
+result: Some("Vilnius")
 
-json("items").extract[Seq[Item]]()
-result: Seq[Item] = Seq(Item(name = "tomatoes"), Item(name = "snickers"))
+json.extractStringOpt("location.postCode")
+result: None
+
+json.extract[Person]("customer")
+result: Person(id = 1, name = "John")
+
+json.extract[Seq[Boolean]]("items.sale") mustEqual Seq(true, false)
+result: Seq(true, false)
+
+json.extract[Seq[Item]]("items")
+result: Seq(Item(name = "tomatoes", sale = true), Item(name = "snickers", sale = false))
+
+json.extract[Item]("items(1)") mustEqual 
+result: Item(name = "snickers", sale = false)
 ```
+
+
 
 #### Basic Json Transformation
 Build a transformation configuration to describe the rules that later can be used
