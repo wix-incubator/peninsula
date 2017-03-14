@@ -6,36 +6,36 @@ import org.specs2.mutable.SpecificationWithJUnit
 
 class ExamplesTest extends SpecificationWithJUnit {
 
-  val json = Json.parse(
-    """
-      {
-        "id": 1,
-        "name": "John",
-        "location": {"city": "Vilnius", "country": "LT"},
-        "customer": { "id": 1, "name": "John"},
-        "items": [{"name": "tomatoes", "sale": true}, {"name": "snickers", "sale": false}]
-      }
-    """)
+val json = Json.parse(
+  """
+    {
+      "id": 1,
+      "name": "John",
+      "location": {"city": "Vilnius", "country": "LT"},
+      "customer": { "id": 1, "name": "John"},
+      "items": [{"name": "tomatoes", "sale": true}, {"name": "snickers", "sale": false}]
+    }
+  """)
 
   "Extraction" in {
     json.extractString("location.city") mustEqual "Vilnius"
-
     json.extractStringOpt("location.city") mustEqual Some("Vilnius")
-
     json.extractStringOpt("location.postCode") mustEqual None
-
     json.extract[Person]("customer") mustEqual Person(id = 1, name = "John")
-
     json.extract[Seq[Boolean]]("items.sale") mustEqual Seq(true, false)
-
     json.extract[Seq[Item]]("items") mustEqual Seq(Item(name = "tomatoes", sale = true), Item(name = "snickers", sale = false))
+    json.extract[Item]("items(1)") mustEqual Item(name = "snickers", sale = false)
   }
 
   "Path" in {
-    val locationJson = json("location")
-    locationJson.extractString("city") mustEqual "Vilnius"
+    val location: Json = json("location")
+    location.extractString("city") mustEqual "Vilnius"
+    location.extractString("country") mustEqual "LT"
 
-    json("items.name").extract[Seq[String]]() mustEqual Seq("tomatoes", "snickers")
+    val items: Json = json("items")
+    items.extractString("(0).name") mustEqual "tomatoes"
+    items.extractString("(1).name") mustEqual "snickers"
+    items.extract[Seq[String]]("name") mustEqual Seq("tomatoes", "snickers")
   }
 
   "Basic Json transformation" in {
