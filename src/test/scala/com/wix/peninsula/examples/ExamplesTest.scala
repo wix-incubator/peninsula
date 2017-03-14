@@ -6,29 +6,36 @@ import org.specs2.mutable.SpecificationWithJUnit
 
 class ExamplesTest extends SpecificationWithJUnit {
 
+  val json = Json.parse(
+    """
+      {
+        "id": 1,
+        "name": "John",
+        "location": {"city": "Vilnius", "country": "LT"},
+        "customer": { "id": 1, "name": "John"},
+        "items": [{"name": "tomatoes", "sale": true}, {"name": "snickers", "sale": false}]
+      }
+    """)
+
   "Extraction" in {
-    import com.wix.peninsula.Json
+    json.extractString("location.city") mustEqual "Vilnius"
 
-    val json = Json.parse("""{"id": 1, "name": "John", "location": {"city": "Vilnius", "country": "LT"}}""")
+    json.extractStringOpt("location.city") mustEqual Some("Vilnius")
 
-    json.extractString("location.city") must_== "Vilnius"
+    json.extractStringOpt("location.postCode") mustEqual None
 
-    json.extractStringOpt("location.city") must_== Some("Vilnius")
+    json.extract[Person]("customer") mustEqual Person(id = 1, name = "John")
 
-    json.extractStringOpt("location.postCode") must_== None
+    json.extract[Seq[Boolean]]("items.sale") mustEqual Seq(true, false)
 
-    json.extractLong("id") must_== 1L
+    json.extract[Seq[Item]]("items") mustEqual Seq(Item(name = "tomatoes", sale = true), Item(name = "snickers", sale = false))
   }
 
-  "Extract case class from a sub object" in {
-    val json = Json.parse(
-      """{"location": "vilnius",
-          "customer": { "id": 1, "name": "John"},
-          "items": [{"name": "tomatoes"}, {"name": "snickers"}]}""")
+  "Path" in {
+    val locationJson = json("location")
+    locationJson.extractString("city") mustEqual "Vilnius"
 
-    json("customer").extract[Person]() mustEqual Person(id = 1, name = "John")
-
-    json("items").extract[Seq[Item]]() mustEqual Seq(Item(name = "tomatoes"), Item(name = "snickers"))
+    json("items.name").extract[Seq[String]]() mustEqual Seq("tomatoes", "snickers")
   }
 
   "Basic Json transformation" in {
