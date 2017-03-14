@@ -115,9 +115,27 @@ case class Json(node: JValue = JObject()) extends ExtractionHelper {
     }
   }
 
-  def extractDouble(path: String): Double = ???
+  def extractDouble(path: String): Double = {
+    this(path).node match {
+      case JInt(v)      => extractDoubleOrThrow(v, Json(JInt(v))).get
+      case JDouble(v)   => v
+      case JDecimal(v)  => extractDoubleOrThrow(v, Json(JDecimal(v))).get
+      case JNull        => throw JsonElementIsNullException(path)
+      case JNothing     => throw JsonPathDoesntExistException(path)
+      case other        => throw UnexpectedJsonElementException("double", Json(other))
+    }
+  }
 
-  def extractDoubleOpt(path: String): Option[Double] = ???
+  def extractDoubleOpt(path: String): Option[Double] = {
+    this(path).node match {
+      case JInt(v)      => extractDoubleOrThrow(v, Json(JInt(v)))
+      case JDouble(v)   => Some(v)
+      case JDecimal(v)  => extractDoubleOrThrow(v, Json(JDecimal(v)))
+      case JNull        => None
+      case JNothing     => None
+      case other        => throw UnexpectedJsonElementException("double", Json(other))
+    }
+  }
 
   def extractBigDecimal(path: String): BigDecimal = ???
 

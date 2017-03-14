@@ -4,9 +4,6 @@ import com.wix.peninsula.exceptions.UnexpectedJsonElementException
 
 import language.reflectiveCalls
 
-/**
-  * @author Ivan V Kamenev <ivanka@wix.com>
-  */
 trait ExtractionHelper {
 
   type IntConvertible = {
@@ -17,6 +14,11 @@ trait ExtractionHelper {
   type LongConvertible = {
     def isValidLong: Boolean
     def toLong: Long
+  }
+
+  type DoubleConvertible = {
+    def isValidDouble: Boolean
+    def toDouble: Double
   }
 
   def extractIntOrThrow(v: IntConvertible, json: Json): Option[Int] = {
@@ -55,6 +57,21 @@ trait ExtractionHelper {
   def extractLongValue(v: LongConvertible): Option[Long] = {
     if (v.isValidLong) {
       Some(v.toLong)
+    } else {
+      None
+    }
+  }
+
+  def extractDoubleOrThrow(v: DoubleConvertible, json: Json): Option[Double] = {
+    extractDoubleValue(v) match {
+      case v: Some[Double] => v
+      case None => throw UnexpectedJsonElementException("double", json)
+    }
+  }
+
+  def extractDoubleValue(v: DoubleConvertible): Option[Double] = {
+    if (v.isValidDouble) {
+      Some(v.toDouble)
     } else {
       None
     }

@@ -330,12 +330,12 @@ class JsonTest extends SpecificationWithJUnit {
         json.extractIntOpt("num_children") must throwAn[UnexpectedJsonElementException]
       }
 
-      "throw an exception if element is null" in {
+      "return None if element is null" in {
         val json = Json.parse("""{"num_children": null}""")
         json.extractIntOpt("num_children") must_== None
       }
 
-      "throw an exception if path doesn't exist" in {
+      "return None if path doesn't exist" in {
         val json = Json.parse("""{"root": {"branch": "foo"}}""")
         json.extractIntOpt("root.num_children") must_== None
       }
@@ -408,12 +408,12 @@ class JsonTest extends SpecificationWithJUnit {
         json.extractBigIntOpt("num_children") must throwAn[UnexpectedJsonElementException]
       }
 
-      "throw an exception if element is null" in {
+      "return None if element is null" in {
         val json = Json.parse("""{"num_children": null}""")
         json.extractBigIntOpt("num_children") must_== None
       }
 
-      "throw an exception if path doesn't exist" in {
+      "return None if path doesn't exist" in {
         val json = Json.parse("""{"root": {"branch": "foo"}}""")
         json.extractBigIntOpt("root.num_children") must_== None
       }
@@ -486,12 +486,12 @@ class JsonTest extends SpecificationWithJUnit {
         json.extractLongOpt("num_children") must throwAn[UnexpectedJsonElementException]
       }
 
-      "throw an exception if element is null" in {
+      "return None if element is null" in {
         val json = Json.parse("""{"num_children": null}""")
         json.extractLongOpt("num_children") must_== None
       }
 
-      "throw an exception if path doesn't exist" in {
+      "return None if path doesn't exist" in {
         val json = Json.parse("""{"root": {"branch": "foo"}}""")
         json.extractLongOpt("root.num_children") must_== None
       }
@@ -499,6 +499,64 @@ class JsonTest extends SpecificationWithJUnit {
       "throw an exception if type of JSON element doesn't match number" in {
         val json = Json.parse("""{"num_children": "22222222222"}""")
         json.extractLongOpt("num_children") must throwAn[UnexpectedJsonElementException]
+      }
+
+    }
+
+    "extractDouble" should {
+
+      "extract value in case it matches double in JSON" in {
+        val json = Json.parse("""{"num_children": 42.0}""")
+        json.extractDouble("num_children") must_== 42.0
+      }
+
+      "extract and convert integer value to double" in {
+        val json = Json.parse("""{"num_children": 22222222222}""")
+        json.extractDouble("num_children") must_== 22222222222.0
+      }
+
+      "throw an exception if element is null" in {
+        val json = Json.parse("""{"num_children": null}""")
+        json.extractDouble("num_children") must throwAn[JsonElementIsNullException]
+      }
+
+      "throw an exception if path doesn't exist" in {
+        val json = Json.parse("""{"root": {"branch": "foo"}}""")
+        json.extractDouble("root.num_children") must throwAn[JsonPathDoesntExistException]
+      }
+
+      "throw an exception if type of JSON element doesn't match number" in {
+        val json = Json.parse("""{"num_children": "22222222222.0"}""")
+        json.extractDouble("num_children") must throwAn[UnexpectedJsonElementException]
+      }
+
+    }
+
+    "extractDoubleOpt" should {
+
+      "extract value in case it matches double in JSON" in {
+        val json = Json.parse("""{"num_children": 42.0}""")
+        json.extractDoubleOpt("num_children") must_== Some(42.0)
+      }
+
+      "extract and convert integer value to double" in {
+        val json = Json.parse("""{"num_children": 22222222222}""")
+        json.extractDoubleOpt("num_children") must_== Some(22222222222.0)
+      }
+
+      "return None if element is null" in {
+        val json = Json.parse("""{"num_children": null}""")
+        json.extractDoubleOpt("num_children") must_== None
+      }
+
+      "return None if path doesn't exist" in {
+        val json = Json.parse("""{"root": {"branch": "foo"}}""")
+        json.extractDoubleOpt("root.num_children") must_== None
+      }
+
+      "throw an exception if type of JSON element doesn't match number" in {
+        val json = Json.parse("""{"num_children": "22222222222.0"}""")
+        json.extractDoubleOpt("num_children") must throwAn[UnexpectedJsonElementException]
       }
 
     }
