@@ -1,13 +1,14 @@
 package com.wix.peninsula
 
 import com.wix.peninsula.exceptions.{JsonElementIsNullException, JsonPathDoesntExistException, UnexpectedJsonElementException}
-import org.json4s.JsonAST.{JArray, JField, JNothing, JNull, JObject, JString, JValue}
+import org.json4s.JsonAST.{JArray, JDecimal, JDouble, JField, JInt, JNothing, JNull, JObject, JString, JValue}
 import org.json4s._
 import org.json4s.jackson.JsonMethods
 
 import scala.PartialFunction._
 
-case class Json(node: JValue = JObject()) {
+case class Json(node: JValue = JObject()) extends ExtractionHelper {
+
   implicit val formats = DefaultFormats
 
   def only(fieldNames: Set[String]): Json = this.node match {
@@ -40,9 +41,27 @@ case class Json(node: JValue = JObject()) {
     }
   }
 
-  def extractInt(path: String): BigInt = ???
+  def extractInt(path: String): Int = {
+    this(path).node match {
+      case JInt(v) => extractIntOrThrow(v, Json(JInt(v))).get
+      case JDouble(v) => extractIntOrThrow(BigDecimal(v), Json(JDouble(v))).get
+      case JDecimal(v) => extractIntOrThrow(v, Json(JDecimal(v))).get
+      case JNull    => throw JsonElementIsNullException(path)
+      case JNothing => throw JsonPathDoesntExistException(path)
+      case other    => throw UnexpectedJsonElementException("integer", Json(other))
+    }
+  }
 
-  def extractIntOpt(path: String): Option[Int] = ???
+  def extractIntOpt(path: String): Option[Int] = {
+    this(path).node match {
+      case JInt(v) => extractIntOrThrow(v, Json(JInt(v)))
+      case JDouble(v) => extractIntOrThrow(BigDecimal(v), Json(JDouble(v)))
+      case JDecimal(v) => extractIntOrThrow(v, Json(JDecimal(v)))
+      case JNull    => None
+      case JNothing => None
+      case other    => throw UnexpectedJsonElementException("integer", Json(other))
+    }
+  }
 
   def extractBigInt(path: String): BigInt = ???
 
@@ -182,8 +201,8 @@ case class Json(node: JValue = JObject()) {
     case _: JArray => "array"
     case _: JString => "string"
     case _: JDouble => "double"
-    case _: JDecimal => "decimal"
-    case _: JInt => "int"
+    case _: JDecimal => "big decimal"
+    case _: JInt => "big integer"
     case _: JBool => "boolean"
     case _: JNull.type => "null"
     case _: JNothing.type => "nothing"
@@ -221,7 +240,6 @@ case class Json(node: JValue = JObject()) {
   def set(path: String, value: Json): Json = {
     this.merge(Json.create(path, value))
   }
-
 
   def set(path: String, value: String): Json = set(path, Json(JString(value)))
 
@@ -290,6 +308,7 @@ case class Json(node: JValue = JObject()) {
       .map { case JField(name, value) => JField (name, excludeNullValues(value))
     })
   }
+
 }
 
 object Json {
@@ -305,4 +324,5 @@ object Json {
     val nestedField = pathSeq.dropRight(1).foldRight(bottomField)(JField(_, _))
     JObject(nestedField)
   }
+
 }
