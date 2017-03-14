@@ -23,6 +23,14 @@ case class Json(node: JValue = JObject()) extends ExtractionHelper {
     node.extract[T]
   }
 
+  def extract[T: Manifest](path: String): T = {
+    this(path).node match {
+      case JNull    => throw JsonElementIsNullException(path)
+      case JNothing => throw JsonPathDoesntExistException(path)
+      case other    => other.extract[T]
+    }
+  }
+
   def extractBoolean(path: String): Boolean = {
     this(path).node match {
       case JBool(v) => v

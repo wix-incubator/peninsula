@@ -632,6 +632,12 @@ class JsonTest extends SpecificationWithJUnit {
       json.extract[Person]() mustEqual Person(id = 1, name = "Hello")
     }
 
+    "Extract case class from path in an object" in {
+      val json = Json.parse("""{ "person": { "id": 1, "name": "Hello"} }""")
+
+      json.extract[Person]("person") mustEqual Person(id = 1, name = "Hello")
+    }
+
     "Extract a sequence of case classes from a json array" in {
       val json = Json.parse("""[{ "id": 1, "name": "Hello"}, {"id": 2, "name": "Goodbye"}] """)
 
