@@ -4,9 +4,6 @@ import com.wix.peninsula.domain.Person
 import com.wix.peninsula.exceptions.{JsonElementIsNullException, JsonPathDoesntExistException, UnexpectedJsonElementException}
 import org.specs2.mutable.SpecificationWithJUnit
 
-/**
-  * @author Ivan V Kamenev <ivanka@wix.com>
-  */
 class ExtractionTest extends SpecificationWithJUnit {
 
   "extract" should {

@@ -3,9 +3,6 @@ package com.wix.peninsula
 import com.wix.peninsula.exceptions.{JsonElementIsNullException, JsonPathDoesntExistException, UnexpectedJsonElementException}
 import org.json4s.JsonAST._
 
-/**
-  * @author Ivan V Kamenev <ivanka@wix.com>
-  */
 trait Extraction extends ExtractionHelper {
 
   this: Json =>
