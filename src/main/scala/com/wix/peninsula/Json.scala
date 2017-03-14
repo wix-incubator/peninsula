@@ -8,7 +8,6 @@ import org.json4s.jackson.JsonMethods
 import scala.PartialFunction._
 
 case class Json(node: JValue = JObject()) {
-
   implicit val formats = DefaultFormats
 
   def only(fieldNames: Set[String]): Json = this.node match {
@@ -264,8 +263,13 @@ case class Json(node: JValue = JObject()) {
   }
 
   private def readFromPath(json: JValue, path: String): JValue = {
-    val pathSeq = path.split("\\.")
-    pathSeq.foldLeft(json) { (a: JValue, name: String) => a \ name }
+    val pathSeq: Array[String] = path.split("\\.")
+    pathSeq.foldLeft(json) { (a: JValue, name: String) => {
+        val el = JsonPathElement.parse(name)
+        if (el.index.isDefined) (a \ el.name) (el.index.get)
+        else a \ el.name
+      }
+    }
   }
 
   def excludeNullValues: Json = Json(excludeNullValues(node))
