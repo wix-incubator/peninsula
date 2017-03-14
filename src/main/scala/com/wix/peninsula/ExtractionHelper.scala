@@ -14,6 +14,11 @@ trait ExtractionHelper {
     def toInt: Int
   }
 
+  type LongConvertible = {
+    def isValidLong: Boolean
+    def toLong: Long
+  }
+
   def extractIntOrThrow(v: IntConvertible, json: Json): Option[Int] = {
     extractIntValue(v) match {
       case v: Some[Int] => v
@@ -37,6 +42,21 @@ trait ExtractionHelper {
       }
     } else {
       throw UnexpectedJsonElementException("big integer", json)
+    }
+  }
+
+  def extractLongOrThrow(v: LongConvertible, json: Json): Option[Long] = {
+    extractLongValue(v) match {
+      case v: Some[Long] => v
+      case None => throw UnexpectedJsonElementException("long", json)
+    }
+  }
+
+  def extractLongValue(v: LongConvertible): Option[Long] = {
+    if (v.isValidLong) {
+      Some(v.toLong)
+    } else {
+      None
     }
   }
 

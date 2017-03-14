@@ -86,11 +86,25 @@ case class Json(node: JValue = JObject()) extends ExtractionHelper {
   }
 
   def extractLong(path: String): Long = {
-    this(path).node.extract[Long]
+    this(path).node match {
+      case JInt(v)      => extractLongOrThrow(v, Json(JInt(v))).get
+      case JDouble(v)   => extractLongOrThrow(BigDecimal(v), Json(JDouble(v))).get
+      case JDecimal(v)  => extractLongOrThrow(v, Json(JDecimal(v))).get
+      case JNull        => throw JsonElementIsNullException(path)
+      case JNothing     => throw JsonPathDoesntExistException(path)
+      case other        => throw UnexpectedJsonElementException("long", Json(other))
+    }
   }
 
   def extractLongOpt(path: String): Option[Long] = {
-    this(path).node.extractOpt[Long]
+    this(path).node match {
+      case JInt(v)      => extractLongOrThrow(v, Json(JInt(v)))
+      case JDouble(v)   => extractLongOrThrow(BigDecimal(v), Json(JDouble(v)))
+      case JDecimal(v)  => extractLongOrThrow(v, Json(JDecimal(v)))
+      case JNull        => None
+      case JNothing     => None
+      case other        => throw UnexpectedJsonElementException("long", Json(other))
+    }
   }
 
   def extractDouble(path: String): Double = ???

@@ -281,12 +281,12 @@ class JsonTest extends SpecificationWithJUnit {
         json.extractInt("num_children") must_== 42
       }
 
-      "throw an exception if number exceeds integer max value limit" in {
+      "throw an exception if number exceeds integer's max value limit" in {
         val json = Json.parse("""{"num_children": 21341234123412341234}""")
         json.extractInt("num_children") must throwAn[UnexpectedJsonElementException]
       }
 
-      "throw an exception if integer part of decimal number exceeds integer max value limit" in {
+      "throw an exception if integer part of decimal number exceeds integer's max value limit" in {
         val json = Json.parse("""{"num_children": 21341234123412341234.0}""")
         json.extractInt("num_children") must throwAn[UnexpectedJsonElementException]
       }
@@ -320,12 +320,12 @@ class JsonTest extends SpecificationWithJUnit {
         json.extractIntOpt("num_children") must_== Some(42)
       }
 
-      "throw an exception if number exceeds integer max value limit" in {
+      "throw an exception if number exceeds integer's max value limit" in {
         val json = Json.parse("""{"num_children": 21341234123412341234}""")
         json.extractIntOpt("num_children") must throwAn[UnexpectedJsonElementException]
       }
 
-      "throw an exception if integer part of decimal number exceeds integer max value limit" in {
+      "throw an exception if integer part of decimal number exceeds integer's max value limit" in {
         val json = Json.parse("""{"num_children": 21341234123412341234.0}""")
         json.extractIntOpt("num_children") must throwAn[UnexpectedJsonElementException]
       }
@@ -421,6 +421,84 @@ class JsonTest extends SpecificationWithJUnit {
       "throw an exception if type of JSON element doesn't match number" in {
         val json = Json.parse("""{"num_children": "42"}""")
         json.extractBigIntOpt("num_children") must throwAn[UnexpectedJsonElementException]
+      }
+
+    }
+
+    "extractLong" should {
+
+      "extract value in case it matches long in JSON" in {
+        val json = Json.parse("""{"num_children": 22222222222}""")
+        json.extractLong("num_children") must_== 22222222222L
+      }
+
+      "extract and convert decimal value to long if it can be done losslessly" in {
+        val json = Json.parse("""{"num_children": 22222222222.0}""")
+        json.extractLong("num_children") must_== 22222222222L
+      }
+
+      "throw an exception if number exceeds long's max value limit" in {
+        val json = Json.parse("""{"num_children": 21341234123412341234}""")
+        json.extractLong("num_children") must throwAn[UnexpectedJsonElementException]
+      }
+
+      "throw an exception if integer part of decimal number exceeds long's max value limit" in {
+        val json = Json.parse("""{"num_children": 21341234123412341234.0}""")
+        json.extractLong("num_children") must throwAn[UnexpectedJsonElementException]
+      }
+
+      "throw an exception if element is null" in {
+        val json = Json.parse("""{"num_children": null}""")
+        json.extractLong("num_children") must throwAn[JsonElementIsNullException]
+      }
+
+      "throw an exception if path doesn't exist" in {
+        val json = Json.parse("""{"root": {"branch": "foo"}}""")
+        json.extractLong("root.num_children") must throwAn[JsonPathDoesntExistException]
+      }
+
+      "throw an exception if type of JSON element doesn't match number" in {
+        val json = Json.parse("""{"num_children": "22222222222"}""")
+        json.extractLong("num_children") must throwAn[UnexpectedJsonElementException]
+      }
+
+    }
+
+    "extractLongOpt" should {
+
+      "extract value in case it matches long in JSON" in {
+        val json = Json.parse("""{"num_children": 22222222222}""")
+        json.extractLongOpt("num_children") must_== Some(22222222222L)
+      }
+
+      "extract and convert decimal value to long if it can be done losslessly" in {
+        val json = Json.parse("""{"num_children": 22222222222.0}""")
+        json.extractLongOpt("num_children") must_== Some(22222222222L)
+      }
+
+      "throw an exception if number exceeds long's max value limit" in {
+        val json = Json.parse("""{"num_children": 21341234123412341234}""")
+        json.extractLongOpt("num_children") must throwAn[UnexpectedJsonElementException]
+      }
+
+      "throw an exception if integer part of decimal number exceeds long's max value limit" in {
+        val json = Json.parse("""{"num_children": 21341234123412341234.0}""")
+        json.extractLongOpt("num_children") must throwAn[UnexpectedJsonElementException]
+      }
+
+      "throw an exception if element is null" in {
+        val json = Json.parse("""{"num_children": null}""")
+        json.extractLongOpt("num_children") must_== None
+      }
+
+      "throw an exception if path doesn't exist" in {
+        val json = Json.parse("""{"root": {"branch": "foo"}}""")
+        json.extractLongOpt("root.num_children") must_== None
+      }
+
+      "throw an exception if type of JSON element doesn't match number" in {
+        val json = Json.parse("""{"num_children": "22222222222"}""")
+        json.extractLongOpt("num_children") must throwAn[UnexpectedJsonElementException]
       }
 
     }
