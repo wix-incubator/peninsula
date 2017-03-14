@@ -137,9 +137,27 @@ case class Json(node: JValue = JObject()) extends ExtractionHelper {
     }
   }
 
-  def extractBigDecimal(path: String): BigDecimal = ???
+  def extractBigDecimal(path: String): BigDecimal = {
+    this(path).node match {
+      case JInt(v)      => BigDecimal(v)
+      case JDouble(v)   => BigDecimal(v)
+      case JDecimal(v)  => v
+      case JNull        => throw JsonElementIsNullException(path)
+      case JNothing     => throw JsonPathDoesntExistException(path)
+      case other        => throw UnexpectedJsonElementException("big decimal", Json(other))
+    }
+  }
 
-  def extractBigDecimalOpt(path: String): Option[BigDecimal] = ???
+  def extractBigDecimalOpt(path: String): Option[BigDecimal] = {
+    this(path).node match {
+      case JInt(v)      => Some(BigDecimal(v))
+      case JDouble(v)   => Some(BigDecimal(v))
+      case JDecimal(v)  => Some(v)
+      case JNull        => None
+      case JNothing     => None
+      case other        => throw UnexpectedJsonElementException("big decimal", Json(other))
+    }
+  }
 
   def extractString(path: String): String = {
     this(path).node.extract[String]

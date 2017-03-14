@@ -561,6 +561,54 @@ class JsonTest extends SpecificationWithJUnit {
 
     }
 
+    "extractBigDecimal" should {
+
+      "extract value in case it matches number in JSON" in {
+        val json = Json.parse("""{"num_children": 21341234123412341234}""")
+        json.extractBigDecimal("num_children") must_== BigDecimal("21341234123412341234")
+      }
+
+      "throw an exception if element is null" in {
+        val json = Json.parse("""{"num_children": null}""")
+        json.extractBigDecimal("num_children") must throwAn[JsonElementIsNullException]
+      }
+
+      "throw an exception if path doesn't exist" in {
+        val json = Json.parse("""{"root": {"branch": "foo"}}""")
+        json.extractBigDecimal("root.num_children") must throwAn[JsonPathDoesntExistException]
+      }
+
+      "throw an exception if type of JSON element doesn't match number" in {
+        val json = Json.parse("""{"num_children": "22222222222.0"}""")
+        json.extractBigDecimal("num_children") must throwAn[UnexpectedJsonElementException]
+      }
+
+    }
+
+    "extractBigDecimalOpt" should {
+
+      "extract value in case it matches number in JSON" in {
+        val json = Json.parse("""{"num_children": 21341234123412341234}""")
+        json.extractBigDecimalOpt("num_children") must_== Some(BigDecimal("21341234123412341234"))
+      }
+
+      "return None if element is null" in {
+        val json = Json.parse("""{"num_children": null}""")
+        json.extractBigDecimalOpt("num_children") must_== None
+      }
+
+      "return None if path doesn't exist" in {
+        val json = Json.parse("""{"root": {"branch": "foo"}}""")
+        json.extractBigDecimalOpt("root.num_children") must_== None
+      }
+
+      "throw an exception if type of JSON element doesn't match number" in {
+        val json = Json.parse("""{"num_children": "22222222222.0"}""")
+        json.extractBigDecimalOpt("num_children") must throwAn[UnexpectedJsonElementException]
+      }
+
+    }
+
     "extract string" in {
       val json = Json.parse("""{"check": "hello"}""")
       json.extractString("check") must_== "hello"
