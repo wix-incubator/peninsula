@@ -1,6 +1,6 @@
 package com.wix.peninsula
 
-import com.wix.peninsula.exceptions.UnexpectedJsonElementException
+import com.wix.peninsula.exceptions.{JsonElementIsNullException, JsonPathDoesntExistException, UnexpectedJsonElementException}
 import org.json4s.JsonAST.{JArray, JField, JNothing, JNull, JObject, JString, JValue}
 import org.json4s._
 import org.json4s.jackson.JsonMethods
@@ -19,19 +19,59 @@ case class Json(node: JValue = JObject()) {
 
   def only(fieldNames: Option[Set[String]]): Json = fieldNames.map(this.only).getOrElse(this)
 
-  def extractString(path: String): String =
-    this(path).node.extract[String]
+  def extract[T: Manifest](): T = {
+    node.extract[T]
+  }
 
-  def extractStringOpt(path: String): Option[String] =
-    this(path).node.extractOpt[String]
+  def extractBoolean(path: String): Boolean = {
+    this(path).node match {
+      case JBool(v) => v
+      case JNull    => throw JsonElementIsNullException(path)
+      case JNothing => throw JsonPathDoesntExistException(path)
+      case other    => throw UnexpectedJsonElementException("boolean", Json(other))
+    }
+  }
 
-  def extractLong(path: String): Long =
+  def extractBooleanOpt(path: String): Option[Boolean] = {
+    this(path).node match {
+      case JBool(v) => Some(v)
+      case JNull    => None
+      case JNothing => None
+      case other    => throw UnexpectedJsonElementException("boolean", Json(other))
+    }
+  }
+
+  def extractInt(path: String): BigInt = ???
+
+  def extractIntOpt(path: String): Option[Int] = ???
+
+  def extractBigInt(path: String): BigInt = ???
+
+  def extractBigIntOpt(path: String): Option[BigInt] = ???
+
+  def extractLong(path: String): Long = {
     this(path).node.extract[Long]
+  }
 
-  def extractLongOpt(path: String): Option[Long] =
+  def extractLongOpt(path: String): Option[Long] = {
     this(path).node.extractOpt[Long]
+  }
 
-  def extract[T: Manifest](): T = node.extract[T]
+  def extractDouble(path: String): Double = ???
+
+  def extractDoubleOpt(path: String): Option[Double] = ???
+
+  def extractBigDecimal(path: String): BigDecimal = ???
+
+  def extractBigDecimalOpt(path: String): Option[BigDecimal] = ???
+
+  def extractString(path: String): String = {
+    this(path).node.extract[String]
+  }
+
+  def extractStringOpt(path: String): Option[String] = {
+    this(path).node.extractOpt[String]
+  }
 
   def mapObjects[T](func: (Json) => T): List[T] = {
     val JArray(objects: List[JValue]) = this.node
@@ -55,7 +95,7 @@ case class Json(node: JValue = JObject()) {
     translateArray(translationsArray.objectsById(idField), config, idField)
   }
 
-  def translateArray(translationsById: Map[JValue, Json], config: TransformationConfig, idField: String) = {
+  def translateArray(translationsById: Map[JValue, Json], config: TransformationConfig, idField: String): List[JValue] = {
     this match {
       case Json(JArray(objects)) => translateObjects(objects, translationsById, config, idField)
       case Json(elem) => throw UnexpectedJsonElementException("array", this)
@@ -131,12 +171,24 @@ case class Json(node: JValue = JObject()) {
     Json(merge(this.node, json.node))
   }
 
-  def setIfValuePresent(toPath: String, value: Json) = {
+  def setIfValuePresent(toPath: String, value: Json): Json = {
     if (value.node != JNothing) this.remove(toPath).set(toPath, value)
     else this
   }
 
   override def toString: String = JsonMethods.pretty(JsonMethods.render(node))
+
+  def getTypeString: String = node match {
+    case _: JObject => "object"
+    case _: JArray => "array"
+    case _: JString => "string"
+    case _: JDouble => "double"
+    case _: JDecimal => "decimal"
+    case _: JInt => "int"
+    case _: JBool => "boolean"
+    case _: JNull.type => "null"
+    case _: JNothing.type => "nothing"
+  }
 
   def compactRender: String = JsonMethods.compact(JsonMethods.render(node))
 
@@ -200,8 +252,8 @@ case class Json(node: JValue = JObject()) {
 
   def isObjectOfIntValues: Boolean = {
     this.node match {
-      case JObject(t)    => isStringToJIntTuples(t)
-      case somethingElse => false
+      case JObject(t) => isStringToJIntTuples(t)
+      case _          => false
     }
   }
 
@@ -225,7 +277,7 @@ case class Json(node: JValue = JObject()) {
   }
 
   private def excludeNullValuesFromJArray(jArray: JArray): JArray = {
-    JArray(jArray.arr.filterNot(_ == JNull).map(excludeNullValues(_)))
+    JArray(jArray.arr.filterNot(_ == JNull).map(excludeNullValues))
   }
 
   private def excludeNullValuesFromJObject(jObject: JObject): JObject = {

@@ -1,6 +1,6 @@
 package com.wix.peninsula
 
-import com.wix.peninsula.exceptions.{JsonValidationException, UnexpectedJsonElementException}
+import com.wix.peninsula.exceptions.{JsonElementIsNullException, JsonPathDoesntExistException, JsonValidationException, UnexpectedJsonElementException}
 import CopyConfigFactory._
 import JsonValidators._
 import com.wix.peninsula.domain.Person
@@ -219,6 +219,53 @@ class JsonTest extends SpecificationWithJUnit {
       val buf = ListBuffer[Json]()
       json.foreachObject( (json) => buf += json  )
       buf.toList must_== List(Json(JObject(JField("name", JInt(1)))), Json(JObject(JField("name", JInt(2)))))
+    }
+
+    "extractBoolean" should {
+
+      "extract value in case it is boolean in JSON" in {
+        val json = Json.parse("""{"is_checked": false}""")
+        json.extractBoolean("is_checked") must_== false
+      }
+
+      "throw an exception if element is null" in {
+        val json = Json.parse("""{"is_checked": null}""")
+        json.extractBoolean("is_checked") must throwAn[JsonElementIsNullException]
+      }
+
+      "throw an exception if path doesn't exist" in {
+        val json = Json.parse("""{"root": {"branch": "foo"}}""")
+        json.extractBoolean("root.is_checked") must throwAn[JsonPathDoesntExistException]
+      }
+
+      "throw an exception if type of JSON element doesn't match boolean" in {
+        val json = Json.parse("""{"is_checked": "false"}""")
+        json.extractBoolean("is_checked") must throwAn[UnexpectedJsonElementException]
+      }
+    }
+
+    "extractBooleanOpt" should {
+
+      "return Some(value) in case it is boolean in JSON" in {
+        val json = Json.parse("""{"is_checked": false}""")
+        json.extractBooleanOpt("is_checked") must_== Some(false)
+      }
+
+      "return None if element is null" in {
+        val json = Json.parse("""{"is_checked": null}""")
+        json.extractBooleanOpt("is_checked") must_== None
+      }
+
+      "return None if path doesn't exist" in {
+        val json = Json.parse("""{"root": {"branch": "foo"}}""")
+        json.extractBooleanOpt("root.is_checked") must_== None
+      }
+
+      "throw an exception if type of JSON element doesn't match boolean" in {
+        val json = Json.parse("""{"is_checked": "false"}""")
+        json.extractBooleanOpt("is_checked") must throwAn[UnexpectedJsonElementException]
+      }
+
     }
 
     "extract string" in {
