@@ -13,7 +13,7 @@ class ExtractionTest extends SpecificationWithJUnit {
 
     "extract case class from an object" in {
       val json = Json.parse("""{ "id": 1, "name": "Hello"}""")
-      json.extract[Person]() mustEqual Person(id = 1, name = "Hello")
+      json.extract[Person] mustEqual Person(id = 1, name = "Hello")
     }
 
     "extract case class from path in an object" in {
@@ -23,7 +23,36 @@ class ExtractionTest extends SpecificationWithJUnit {
 
     "extract a sequence of case classes from a json array" in {
       val json = Json.parse("""[{ "id": 1, "name": "Hello"}, {"id": 2, "name": "Goodbye"}] """)
-      json.extract[Seq[Person]]() mustEqual Seq(Person(id = 1, name = "Hello"), Person(id = 2, name = "Goodbye"))
+      json.extract[Seq[Person]] mustEqual Seq(Person(id = 1, name = "Hello"), Person(id = 2, name = "Goodbye"))
+    }
+
+    "throw an exception if element is null" in {
+      val json = Json.parse("""{"person": null}""")
+      json.extract[Person]("person") must throwAn[JsonElementIsNullException]
+    }
+
+    "throw an exception if path doesn't exist" in {
+      val json = Json.parse("""{ "person": { "id": 1, "name": "Hello"} }""")
+      json.extract[Person]("customer") must throwAn[JsonPathDoesntExistException]
+    }
+
+  }
+
+  "extractOpt" should {
+
+    "extract case class from path in an object" in {
+      val json = Json.parse("""{ "person": { "id": 1, "name": "Hello"} }""")
+      json.extractOpt[Person]("person") mustEqual Some(Person(id = 1, name = "Hello"))
+    }
+
+    "return None if element is null" in {
+      val json = Json.parse("""{"person": null}""")
+      json.extractOpt[Person]("person") must_== None
+    }
+
+    "return None if path doesn't exist" in {
+      val json = Json.parse("""{ "person": { "id": 1, "name": "Hello"} }""")
+      json.extractOpt[Person]("customer") must_== None
     }
 
   }

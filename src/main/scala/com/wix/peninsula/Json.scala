@@ -7,7 +7,7 @@ import org.json4s.jackson.JsonMethods
 
 import scala.PartialFunction._
 
-case class Json(node: JValue = JObject(), formats: DefaultFormats = DefaultFormats) extends Extraction {
+case class Json(node: JValue = JObject(), implicit val formats: DefaultFormats = DefaultFormats) extends Extraction {
 
   def only(fieldNames: Set[String]): Json = this.node match {
     case JObject(fields) => Json(JObject(fields.filter( f => fieldNames.contains(f._1))))

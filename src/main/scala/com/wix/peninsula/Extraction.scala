@@ -10,8 +10,16 @@ trait Extraction extends ExtractionHelper {
 
   this: Json =>
 
-  def extract[T: Manifest](): T = {
+  def extract[T: Manifest]: T = {
     node.extract[T]
+  }
+
+  def extractOpt[T: Manifest]: Option[T] = {
+    node match {
+      case JNull    => None
+      case JNothing => None
+      case other    => Some(other.extract[T])
+    }
   }
 
   def extract[T: Manifest](path: String): T = {
@@ -19,6 +27,14 @@ trait Extraction extends ExtractionHelper {
       case JNull    => throw JsonElementIsNullException(path)
       case JNothing => throw JsonPathDoesntExistException(path)
       case other    => other.extract[T]
+    }
+  }
+
+  def extractOpt[T: Manifest](path: String): Option[T] = {
+    this(path).node match {
+      case JNull    => None
+      case JNothing => None
+      case other    => Some(other.extract[T])
     }
   }
 
