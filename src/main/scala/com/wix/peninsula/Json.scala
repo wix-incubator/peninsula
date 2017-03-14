@@ -160,11 +160,29 @@ case class Json(node: JValue = JObject()) extends ExtractionHelper {
   }
 
   def extractString(path: String): String = {
-    this(path).node.extract[String]
+    this(path).node match {
+      case JString(v)   => v
+      case JDecimal(v)  => v.toString
+      case JInt(v)      => v.toString
+      case JDouble(v)   => String.valueOf(v)
+      case JBool(v)     => String.valueOf(v)
+      case JNull        => throw JsonElementIsNullException(path)
+      case JNothing     => throw JsonPathDoesntExistException(path)
+      case other        => throw UnexpectedJsonElementException("string", Json(other))
+    }
   }
 
   def extractStringOpt(path: String): Option[String] = {
-    this(path).node.extractOpt[String]
+    this(path).node match {
+      case JString(v)   => Some(v)
+      case JDecimal(v)  => Some(v.toString)
+      case JInt(v)      => Some(v.toString)
+      case JDouble(v)   => Some(String.valueOf(v))
+      case JBool(v)     => Some(String.valueOf(v))
+      case JNull        => None
+      case JNothing     => None
+      case other        => throw UnexpectedJsonElementException("string", Json(other))
+    }
   }
 
   def mapObjects[T](func: (Json) => T): List[T] = {

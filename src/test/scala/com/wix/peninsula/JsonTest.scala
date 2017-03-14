@@ -609,6 +609,92 @@ class JsonTest extends SpecificationWithJUnit {
 
     }
 
+    "extractString" should {
+
+      "extract value in case it is string in JSON" in {
+        val json = Json.parse("""{"check": "hello"}""")
+        json.extractString("check") must_== "hello"
+      }
+
+      "extract and convert boolean value to string" in {
+        val json = Json.parse("""{"check": true}""")
+        json.extractString("check") must_== "true"
+      }
+
+      "extract and convert integer value to string" in {
+        val json = Json.parse("""{"check": 10}""")
+        json.extractString("check") must_== "10"
+      }
+
+      "extract and convert double value to string" in {
+        val json = Json.parse("""{"check": 10.0}""")
+        json.extractString("check") must_== "10.0"
+      }
+
+      "throw an exception if element is null" in {
+        val json = Json.parse("""{"num_children": null}""")
+        json.extractString("num_children") must throwAn[JsonElementIsNullException]
+      }
+
+      "throw an exception if path doesn't exist" in {
+        val json = Json.parse("""{"root": {"branch": "foo"}}""")
+        json.extractString("root.num_children") must throwAn[JsonPathDoesntExistException]
+      }
+
+      "throw an exception if type of JSON element is an object" in {
+        val json = Json.parse("""{"root": {"branch": "foo"}}""")
+        json.extractString("root") must throwAn[UnexpectedJsonElementException]
+      }
+
+      "throw an exception if type of JSON element is an array" in {
+        val json = Json.parse("""{"root": [{"branch": "foo"}]}""")
+        json.extractString("root") must throwAn[UnexpectedJsonElementException]
+      }
+    }
+
+    "extractStringOpt" should {
+
+      "extract value in case it is string in JSON" in {
+        val json = Json.parse("""{"check": "hello"}""")
+        json.extractStringOpt("check") must_== Some("hello")
+      }
+
+      "extract and convert boolean value to string" in {
+        val json = Json.parse("""{"check": true}""")
+        json.extractStringOpt("check") must_== Some("true")
+      }
+
+      "extract and convert integer value to string" in {
+        val json = Json.parse("""{"check": 10}""")
+        json.extractStringOpt("check") must_== Some("10")
+      }
+
+      "extract and convert double value to string" in {
+        val json = Json.parse("""{"check": 10.0}""")
+        json.extractStringOpt("check") must_== Some("10.0")
+      }
+
+      "return None if element is null" in {
+        val json = Json.parse("""{"num_children": null}""")
+        json.extractStringOpt("num_children") must_== None
+      }
+
+      "return None if path doesn't exist" in {
+        val json = Json.parse("""{"root": {"branch": "foo"}}""")
+        json.extractStringOpt("root.num_children") must_== None
+      }
+
+      "throw an exception if type of JSON element is an object" in {
+        val json = Json.parse("""{"root": {"branch": "foo"}}""")
+        json.extractStringOpt("root") must throwAn[UnexpectedJsonElementException]
+      }
+
+      "throw an exception if type of JSON element is an array" in {
+        val json = Json.parse("""{"root": [{"branch": "foo"}]}""")
+        json.extractStringOpt("root") must throwAn[UnexpectedJsonElementException]
+      }
+    }
+
     "extract string" in {
       val json = Json.parse("""{"check": "hello"}""")
       json.extractString("check") must_== "hello"
