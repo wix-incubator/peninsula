@@ -29,4 +29,15 @@ trait ExtractionHelper {
     }
   }
 
+  def extractBigIntOrThrow(v: BigDecimal, json: Json): Option[BigInt] = {
+    if (v.isValidLong) {
+       v.toBigIntExact() match {
+        case v: Some[BigInt] => v
+        case None => throw UnexpectedJsonElementException("big integer", json)
+      }
+    } else {
+      throw UnexpectedJsonElementException("big integer", json)
+    }
+  }
+
 }

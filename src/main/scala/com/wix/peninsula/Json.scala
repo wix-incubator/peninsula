@@ -43,29 +43,47 @@ case class Json(node: JValue = JObject()) extends ExtractionHelper {
 
   def extractInt(path: String): Int = {
     this(path).node match {
-      case JInt(v) => extractIntOrThrow(v, Json(JInt(v))).get
-      case JDouble(v) => extractIntOrThrow(BigDecimal(v), Json(JDouble(v))).get
-      case JDecimal(v) => extractIntOrThrow(v, Json(JDecimal(v))).get
-      case JNull    => throw JsonElementIsNullException(path)
-      case JNothing => throw JsonPathDoesntExistException(path)
-      case other    => throw UnexpectedJsonElementException("integer", Json(other))
+      case JInt(v)      => extractIntOrThrow(v, Json(JInt(v))).get
+      case JDouble(v)   => extractIntOrThrow(BigDecimal(v), Json(JDouble(v))).get
+      case JDecimal(v)  => extractIntOrThrow(v, Json(JDecimal(v))).get
+      case JNull        => throw JsonElementIsNullException(path)
+      case JNothing     => throw JsonPathDoesntExistException(path)
+      case other        => throw UnexpectedJsonElementException("integer", Json(other))
     }
   }
 
   def extractIntOpt(path: String): Option[Int] = {
     this(path).node match {
-      case JInt(v) => extractIntOrThrow(v, Json(JInt(v)))
-      case JDouble(v) => extractIntOrThrow(BigDecimal(v), Json(JDouble(v)))
-      case JDecimal(v) => extractIntOrThrow(v, Json(JDecimal(v)))
-      case JNull    => None
-      case JNothing => None
-      case other    => throw UnexpectedJsonElementException("integer", Json(other))
+      case JInt(v)      => extractIntOrThrow(v, Json(JInt(v)))
+      case JDouble(v)   => extractIntOrThrow(BigDecimal(v), Json(JDouble(v)))
+      case JDecimal(v)  => extractIntOrThrow(v, Json(JDecimal(v)))
+      case JNull        => None
+      case JNothing     => None
+      case other        => throw UnexpectedJsonElementException("integer", Json(other))
     }
   }
 
-  def extractBigInt(path: String): BigInt = ???
+  def extractBigInt(path: String): BigInt = {
+    this(path).node match {
+      case JInt(v)      => v
+      case JDouble(v)   => extractBigIntOrThrow(BigDecimal(v), Json(JDouble(v))).get
+      case JDecimal(v)  => extractBigIntOrThrow(v, Json(JDecimal(v))).get
+      case JNull        => throw JsonElementIsNullException(path)
+      case JNothing     => throw JsonPathDoesntExistException(path)
+      case other        => throw UnexpectedJsonElementException("big integer", Json(other))
+    }
+  }
 
-  def extractBigIntOpt(path: String): Option[BigInt] = ???
+  def extractBigIntOpt(path: String): Option[BigInt] = {
+    this(path).node match {
+      case JInt(v)      => Some(v)
+      case JDouble(v)   => extractBigIntOrThrow(BigDecimal(v), Json(JDouble(v)))
+      case JDecimal(v)  => extractBigIntOrThrow(v, Json(JDecimal(v)))
+      case JNull        => None
+      case JNothing     => None
+      case other        => throw UnexpectedJsonElementException("big integer", Json(other))
+    }
+  }
 
   def extractLong(path: String): Long = {
     this(path).node.extract[Long]
