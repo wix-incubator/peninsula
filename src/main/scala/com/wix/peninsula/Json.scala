@@ -282,10 +282,12 @@ case class Json(node: JValue = JObject()) extends ExtractionHelper {
 
   private def readFromPath(json: JValue, path: String): JValue = {
     val pathSeq: Array[String] = path.split("\\.")
-    pathSeq.foldLeft(json) { (a: JValue, name: String) => {
-        val el = JsonPathElement.parse(name)
-        if (el.index.isDefined) (a \ el.name) (el.index.get)
-        else a \ el.name
+    pathSeq.foldLeft(json) { (a: JValue, pathElementStr: String) => {
+        JsonPathElement.parse(pathElementStr) match {
+          case JsonPathElement(Some(name), None)        => a \ name
+          case JsonPathElement(Some(name), Some(index)) => (a \ name) (index)
+          case JsonPathElement(None, Some(index))       => a (index)
+        }
       }
     }
   }

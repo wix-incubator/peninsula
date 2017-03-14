@@ -482,10 +482,16 @@ class JsonTest extends SpecificationWithJUnit {
       json.extract[Seq[Person]]() mustEqual Seq(Person(id = 1, name = "Hello"), Person(id = 2, name = "Goodbye"))
     }
 
-    "Extract an element from an array" in {
+    "Find an element of an array by index" in {
       val json = Json.parse("""{"customers": [{ "id": 1, "name": "Hello"}, {"id": 2, "name": "Goodbye"}]} """)
 
-      json("customers(1)") mustEqual Json.parse("""{ "id": 2, "name": "Goodbye"}""")
+      json("customers(1)") mustEqual Json.parse("""{"id": 2, "name": "Goodbye"}""")
+    }
+
+    "Find an element of a top-level array by index" in {
+      val json = Json.parse("""[{ "id": 1, "name": "Hello"}, {"id": 2, "name": "Goodbye"}]""")
+
+      json("(1)") mustEqual Json.parse("""{"id": 2, "name": "Goodbye"}""")
     }
 
   }
