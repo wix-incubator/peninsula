@@ -68,7 +68,27 @@ json.extract[Item]("items(1)") mustEqual
 result: Item(name = "snickers", sale = false)
 ```
 
+You can also subselect a `json` by path and extract values from it 
+```scala
+val location: Json = json("location")
 
+location.extractString("city")
+result: "Vilnius"
+
+location.extractString("country")
+result: "LT"
+
+val items: Json = json("items")
+
+items.extractString("(0).name")
+result: "tomatoes"
+
+items.extractString("(1).name")
+result: "snickers"
+
+items.extract[Seq[String]]("name")
+result: Seq("tomatoes", "snickers")
+```
 
 #### Basic Json Transformation
 Build a transformation configuration to describe the rules that later can be used
