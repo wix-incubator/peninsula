@@ -104,10 +104,10 @@ result: true
 json("items(1).name").contains("snickers")
 result: true
 
-json("id").isNull()
+json("id").isNull
 result: false
 
-json("mobile").isNull() 
+json("mobile").isNull
 result: true
 ```
 
