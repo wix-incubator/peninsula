@@ -46,8 +46,8 @@ val json = Json.parse(
 
     json("items(1).name").contains("snickers") mustEqual true
 
-    json("id").isNull() mustEqual false
-    json("mobile").isNull() mustEqual true
+    json("id").isNull mustEqual false
+    json("mobile").isNull mustEqual true
   }
 
   "Basic Json transformation" in {
