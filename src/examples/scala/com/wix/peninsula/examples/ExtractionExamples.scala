@@ -21,6 +21,10 @@ object ExtractionExamples extends App {
       |        "code": 102,
       |        "description": "password is too short"
       |      }
+      |    ],
+      |    "developers": [
+      |      {"name": "Valdemaras Repšys"},
+      |      {"name": "Ivan Kamenev"}
       |    ]
       |  }
       |}
@@ -35,8 +39,13 @@ object ExtractionExamples extends App {
     // retrieve description for every error in the list
     val errorsDescriptions = root("response.errors.description").extract[List[String]]
 
+    // find first developer in the list, he will be responsible for everything
+    val responsiblePerson = root.extractString("response.developers(0).name")
 
-    println(s"Errors happened: $errorsDescriptions")
+    println(s"Who is to blame: $responsiblePerson")
+    println(s"What exactly happened: $errorsDescriptions")
+
+    // then send an email to the responsible person with list of errors
   }
 
 }
