@@ -5,7 +5,7 @@ Its main goal is to eventually make building data centric [coast-to-coast](http:
 
 Technically Peninsula is an abstraction layer on top of [Json4s](https://github.com/json4s/json4s).
 
-Dislaimer: even if it's used on production at Wix - this is an  early stage lib - with plenty of space for optimization and improvement. Contributions and comments are very welcome!
+Disclaimer: even if it's used on production at Wix - this is an  early stage lib - with plenty of space for optimization and improvement. Contributions and comments are very welcome!
 
 ## Installation
 Add the following dependency to your pom if you use maven
@@ -89,6 +89,8 @@ result: "snickers"
 items.extract[Seq[String]]("name")
 result: Seq("tomatoes", "snickers")
 ```
+
+[Here](#API reference)you can find comprehensive list of extraction methods.
 
 #### Basic Json Transformation
 Build a transformation configuration to describe the rules that later can be used
@@ -317,4 +319,27 @@ result: com.wix.peninsula.Json =
   "id" : 1,
   "role" : "Engineer"
 }
+```
+
+## API reference
+
+There are different methods that allow you to extract values and structures from JSON:
+
+```scala
+json.extract[T](path: String): T
+json.extractOpt[T](path: String): Option[T]
+json.extractBoolean(path: String): Boolean
+json.extractBooleanOpt(path: String): Option[Boolean]
+json.extractInt(path: String): Int
+json.extractIntOpt(path: String): Option[Int]
+json.extractBigInt(path: String): BigInt
+json.extractBigIntOpt(path: String): Option[BigInt]
+json.extractLong(path: String): Long
+json.extractLongOpt(path: String): Option[Long]
+json.extractDouble(path: String): Double
+json.extractDoubleOpt(path: String): Option[Double]
+json.extractBigDecimal(path: String): BigDecimal
+json.extractBigDecimalOpt(path: String): Option[BigDecimal]
+json.extractString(path: String): String
+json.extractStringOpt(path: String): Option[String]
 ```
