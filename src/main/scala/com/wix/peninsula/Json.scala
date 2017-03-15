@@ -9,6 +9,12 @@ import scala.PartialFunction._
 
 case class Json(node: JValue = JObject(), implicit val formats: DefaultFormats = DefaultFormats) extends Extraction {
 
+  def exists(): Boolean = this.node match {
+    case JNothing => false
+    case _        => true
+  }
+
+
   def only(fieldNames: Set[String]): Json = this.node match {
     case JObject(fields) => Json(JObject(fields.filter( f => fieldNames.contains(f._1))))
     case JArray(nodes)   => Json(JArray(nodes.map(Json(_).only(fieldNames).node)))

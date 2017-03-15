@@ -334,6 +334,13 @@ class JsonTest extends SpecificationWithJUnit {
       json("(1)") mustEqual Json.parse("""{"id": 2, "name": "Goodbye"}""")
     }
 
+    "Check if value exists" in {
+      val json = Json.parse("""{"error": 1}""")
+
+      json("error").exists() mustEqual true
+      json("something").exists() mustEqual false
+    }
+
   }
 
 }
