@@ -26,7 +26,7 @@ libraryDependencies += peninsula
 
 All examples below can also be found in the following test: [ExampleTest.scala](https://github.com/wix/peninsula/blob/master/src/test/scala/com/wix/peninsula/examples/ExamplesTest.scala)
 
-#### Extraction
+### Extraction
 Easily extract top level and nested values from json.
 
 ```scala
@@ -46,7 +46,7 @@ val json = Json.parse(
     }
   """)
   
-json.extractString("location.city") mustEqual "Vilnius"
+json.extractString("location.city")
 result: "Vilnius"
 
 json.extractStringOpt("location.city")
@@ -58,13 +58,13 @@ result: None
 json.extract[Person]("customer")
 result: Person(id = 1, name = "John")
 
-json.extract[Seq[Boolean]]("items.sale") mustEqual Seq(true, false)
+json.extract[Seq[Boolean]]("items.sale")
 result: Seq(true, false)
 
 json.extract[Seq[Item]]("items")
 result: Seq(Item(name = "tomatoes", sale = true), Item(name = "snickers", sale = false))
 
-json.extract[Item]("items(1)") mustEqual 
+json.extract[Item]("items(1)") 
 result: Item(name = "snickers", sale = false)
 ```
 
@@ -90,9 +90,30 @@ items.extract[Seq[String]]("name")
 result: Seq("tomatoes", "snickers")
 ```
 
+### Inspection
+```scala
+json("location.city").exists
+result: true
+
+json("location.postCode").exists
+result: false
+
+json("items(1).name").exists
+result: true
+
+json("items(1).name").contains("snickers")
+result: true
+
+json("id").isNull()
+result: false
+
+json("mobile").isNull() 
+result: true
+```
+
 [Here](#api-reference) you can find comprehensive list of extraction methods.
 
-#### Basic Json Transformation
+### Basic Json Transformation
 Build a transformation configuration to describe the rules that later can be used
 for transforming one json into another. TransformationConfig represents a collection
 of copy configurations that each copy one bit from the original json into the resulting json in a specific way.
@@ -138,7 +159,7 @@ com.wix.peninsula.Json =
 }
 ```
 
-#### A More Advanced Json Transformation
+### A More Advanced Json Transformation
 
 In the below example the `mergeObject` copier merges anything in the object specified onto the top level of the resulting json.
 
@@ -197,7 +218,7 @@ result: com.wix.peninsula.Json =
 }
 ```
 
-#### Basic Json Translation
+### Basic Json Translation
 
 Translation differs from transformation in that it keeps the original json and merges the translation on top it.
 In a basic case, when the translation and the original json have the same structure - no transformation config is needed.
@@ -241,10 +262,7 @@ result: com.wix.peninsula.Json =
   }
 }
 ```
-#### Custom Json Translation
-
-
-
+### Custom Json Translation
 ```scala
 import com.wix.peninsula._
 import com.wix.peninsula.CopyConfigFactory._
@@ -304,7 +322,7 @@ result: com.wix.peninsula.Json =
 }
 ```
 
-#### Fields Filtering
+### Fields Filtering
 Define which fields you want to be included into the resulting json and filter all the others out.
 This might get in handy for implementation of restful json endpoints.
 
