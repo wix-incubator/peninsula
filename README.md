@@ -90,7 +90,7 @@ items.extract[Seq[String]]("name")
 result: Seq("tomatoes", "snickers")
 ```
 
-[Here](#api-reference)you can find comprehensive list of extraction methods.
+[Here](#api-reference) you can find comprehensive list of extraction methods.
 
 #### Basic Json Transformation
 Build a transformation configuration to describe the rules that later can be used
@@ -323,23 +323,35 @@ result: com.wix.peninsula.Json =
 
 ## API reference
 
-There are different methods that allow you to extract values and structures from JSON:
+There are different methods, which allow you to extract values and structures from JSON. They can be divided into two groups.
+
+Methods described below look for element in specified path and return element's value in case it either has appropriate type or can be converted to this type. 
+In all other cases methods throw an exception:
+* `JsonPathDoesntExistException` if path doesnt's exist
+* `JsonElementIsNullException` if element's value is null
+* `UnexpectedJsonElementException` if element's value has incorrect type 
 
 ```scala
 json.extract[T](path: String): T
-json.extractOpt[T](path: String): Option[T]
 json.extractBoolean(path: String): Boolean
-json.extractBooleanOpt(path: String): Option[Boolean]
 json.extractInt(path: String): Int
-json.extractIntOpt(path: String): Option[Int]
 json.extractBigInt(path: String): BigInt
-json.extractBigIntOpt(path: String): Option[BigInt]
 json.extractLong(path: String): Long
-json.extractLongOpt(path: String): Option[Long]
 json.extractDouble(path: String): Double
-json.extractDoubleOpt(path: String): Option[Double]
 json.extractBigDecimal(path: String): BigDecimal
-json.extractBigDecimalOpt(path: String): Option[BigDecimal]
 json.extractString(path: String): String
+```
+
+Second group of extraction methods basically has the same functionality except wrapping result to Option().
+They never throw exceptions. Either element's value has appropriate type or can be converted to this type methods return Some(value), otherwise they return None.   
+
+```scala
+json.extractOpt[T](path: String): Option[T]
+json.extractBooleanOpt(path: String): Option[Boolean]
+json.extractIntOpt(path: String): Option[Int]
+json.extractBigIntOpt(path: String): Option[BigInt]
+json.extractLongOpt(path: String): Option[Long]
+json.extractDoubleOpt(path: String): Option[Double]
+json.extractBigDecimalOpt(path: String): Option[BigDecimal]
 json.extractStringOpt(path: String): Option[String]
 ```
