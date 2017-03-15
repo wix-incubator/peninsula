@@ -132,6 +132,7 @@ case class Json(node: JValue = JObject(), implicit val formats: DefaultFormats =
     case _: JBool => "boolean"
     case _: JNull.type => "null"
     case _: JNothing.type => "nothing"
+    case _ => "unknown"
   }
 
   def compactRender: String = JsonMethods.compact(JsonMethods.render(node))
