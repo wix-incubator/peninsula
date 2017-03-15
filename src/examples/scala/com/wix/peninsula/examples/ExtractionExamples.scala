@@ -44,7 +44,7 @@ object WhoIsToBlame extends App {
 
 }
 
-object MercedesFrom80s extends App {
+object WeirdUserDatabase extends App {
 
   val jsonStr =
     """
@@ -85,5 +85,46 @@ object MercedesFrom80s extends App {
   println("""null is extracted as """ + json.extractStringOpt("wix_users(3).id"))
   println("""{";": "truncate table 'users'"} is extracted as """ + json.extractStringOpt("wix_users(4).id"))
   println("""nonexistent element is extracted as """ + json.extractStringOpt("wix_users(5).id"))
+
+}
+
+case class Character(id: Int, firstName: String, secondName: String, relatives: List[Relative])
+case class Relative(id: Int, name: String, preferences: Option[Preferences])
+case class Preferences(iceCream: Boolean, candy: Boolean, gold: Boolean)
+
+object DonaldDuckIsOnCharge extends App {
+
+  val jsonStr =
+    """
+      {
+        "id": 1,
+        "firstName": "Donald",
+        "secondName": "Duck",
+        "relatives": [
+          {
+            "id": 1,
+            "name": "Huey",
+            "preferences": {
+              "iceCream": true,
+              "candy": true,
+              "gold": false
+            }
+          },
+          {
+            "id": 2,
+            "name": "Dewey"
+          },
+          {
+            "id": 3,
+            "name": "Louie"
+          }
+        ]
+      }
+    """
+
+  val json = Json.parse(jsonStr)
+
+  println("Disney character is: " + json.extract[Character])
+  println("Huey's preferences are: " + json.extract[Preferences]("relatives(0).preferences"))
 
 }
