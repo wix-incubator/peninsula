@@ -9,18 +9,30 @@ import scala.PartialFunction._
 
 case class Json(node: JValue = JObject(), implicit val formats: DefaultFormats = DefaultFormats) extends Extraction {
 
-  def exists(): Boolean = this.node match {
+  def exists: Boolean = this.node match {
     case JNothing => false
     case _        => true
+  }
+
+  def exists(path: String): Boolean = {
+    this(path).exists
+  }
+
+  def isNull: Boolean = this.node match {
+    case JNull => true
+    case _     => false
+  }
+
+  def isNull(path: String): Boolean = {
+    this(path).isNull
   }
 
   def contains(value: String): Boolean = {
     extractStringOpt.contains(value)
   }
 
-  def isNull(): Boolean = this.node match {
-    case JNull => true
-    case _     => false
+  def contains(path: String, value: String): Boolean = {
+    this(path).contains(value)
   }
 
   def only(fieldNames: Set[String]): Json = this.node match {
