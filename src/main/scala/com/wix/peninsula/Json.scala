@@ -163,6 +163,8 @@ case class Json(node: JValue = JObject(), implicit val formats: DefaultFormats =
 
   def compactRender: String = JsonMethods.compact(JsonMethods.render(node))
 
+  def prettyRender: String = JsonMethods.pretty(JsonMethods.render(node))
+
   def transformArray(config: TransformationConfig): Json = {
     Json(JArray(this.mapObjects(_.transform(config).node)))
   }
