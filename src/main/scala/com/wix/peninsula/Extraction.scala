@@ -47,17 +47,15 @@ trait Extraction extends ExtractionHelper {
   def extractBooleanOpt(path: String): Option[Boolean] = {
     this(path).node match {
       case JBool(v) => Some(v)
-      case JNull    => None
-      case JNothing => None
-      case other    => throw UnexpectedJsonElementException("boolean", Json(other))
+      case _        => None
     }
   }
 
   def extractInt(path: String): Int = {
     this(path).node match {
-      case JInt(v)      => extractIntOrThrow(v, Json(JInt(v))).get
-      case JDouble(v)   => extractIntOrThrow(BigDecimal(v), Json(JDouble(v))).get
-      case JDecimal(v)  => extractIntOrThrow(v, Json(JDecimal(v))).get
+      case JInt(v)      => extractIntValueOrThrow(v, Json(JInt(v))).get
+      case JDouble(v)   => extractIntValueOrThrow(BigDecimal(v), Json(JDouble(v))).get
+      case JDecimal(v)  => extractIntValueOrThrow(v, Json(JDecimal(v))).get
       case JNull        => throw JsonElementIsNullException(path)
       case JNothing     => throw JsonPathDoesntExistException(path)
       case other        => throw UnexpectedJsonElementException("integer", Json(other))
@@ -66,20 +64,18 @@ trait Extraction extends ExtractionHelper {
 
   def extractIntOpt(path: String): Option[Int] = {
     this(path).node match {
-      case JInt(v)      => extractIntOrThrow(v, Json(JInt(v)))
-      case JDouble(v)   => extractIntOrThrow(BigDecimal(v), Json(JDouble(v)))
-      case JDecimal(v)  => extractIntOrThrow(v, Json(JDecimal(v)))
-      case JNull        => None
-      case JNothing     => None
-      case other        => throw UnexpectedJsonElementException("integer", Json(other))
+      case JInt(v)      => extractIntValue(v)
+      case JDouble(v)   => extractIntValue(BigDecimal(v))
+      case JDecimal(v)  => extractIntValue(v)
+      case _            => None
     }
   }
 
   def extractBigInt(path: String): BigInt = {
     this(path).node match {
       case JInt(v)      => v
-      case JDouble(v)   => extractBigIntOrThrow(BigDecimal(v), Json(JDouble(v))).get
-      case JDecimal(v)  => extractBigIntOrThrow(v, Json(JDecimal(v))).get
+      case JDouble(v)   => extractBigIntValueOrThrow(BigDecimal(v), Json(JDouble(v))).get
+      case JDecimal(v)  => extractBigIntValueOrThrow(v, Json(JDecimal(v))).get
       case JNull        => throw JsonElementIsNullException(path)
       case JNothing     => throw JsonPathDoesntExistException(path)
       case other        => throw UnexpectedJsonElementException("big integer", Json(other))
@@ -89,19 +85,17 @@ trait Extraction extends ExtractionHelper {
   def extractBigIntOpt(path: String): Option[BigInt] = {
     this(path).node match {
       case JInt(v)      => Some(v)
-      case JDouble(v)   => extractBigIntOrThrow(BigDecimal(v), Json(JDouble(v)))
-      case JDecimal(v)  => extractBigIntOrThrow(v, Json(JDecimal(v)))
-      case JNull        => None
-      case JNothing     => None
-      case other        => throw UnexpectedJsonElementException("big integer", Json(other))
+      case JDouble(v)   => extractBigIntValue(BigDecimal(v))
+      case JDecimal(v)  => extractBigIntValue(v)
+      case _            => None
     }
   }
 
   def extractLong(path: String): Long = {
     this(path).node match {
-      case JInt(v)      => extractLongOrThrow(v, Json(JInt(v))).get
-      case JDouble(v)   => extractLongOrThrow(BigDecimal(v), Json(JDouble(v))).get
-      case JDecimal(v)  => extractLongOrThrow(v, Json(JDecimal(v))).get
+      case JInt(v)      => extractLongValueOrThrow(v, Json(JInt(v))).get
+      case JDouble(v)   => extractLongValueOrThrow(BigDecimal(v), Json(JDouble(v))).get
+      case JDecimal(v)  => extractLongValueOrThrow(v, Json(JDecimal(v))).get
       case JNull        => throw JsonElementIsNullException(path)
       case JNothing     => throw JsonPathDoesntExistException(path)
       case other        => throw UnexpectedJsonElementException("long", Json(other))
@@ -110,20 +104,18 @@ trait Extraction extends ExtractionHelper {
 
   def extractLongOpt(path: String): Option[Long] = {
     this(path).node match {
-      case JInt(v)      => extractLongOrThrow(v, Json(JInt(v)))
-      case JDouble(v)   => extractLongOrThrow(BigDecimal(v), Json(JDouble(v)))
-      case JDecimal(v)  => extractLongOrThrow(v, Json(JDecimal(v)))
-      case JNull        => None
-      case JNothing     => None
-      case other        => throw UnexpectedJsonElementException("long", Json(other))
+      case JInt(v)      => extractLongValue(v)
+      case JDouble(v)   => extractLongValue(BigDecimal(v))
+      case JDecimal(v)  => extractLongValue(v)
+      case _            => None
     }
   }
 
   def extractDouble(path: String): Double = {
     this(path).node match {
-      case JInt(v)      => extractDoubleOrThrow(v, Json(JInt(v))).get
+      case JInt(v)      => extractDoubleValueOrThrow(v, Json(JInt(v))).get
       case JDouble(v)   => v
-      case JDecimal(v)  => extractDoubleOrThrow(v, Json(JDecimal(v))).get
+      case JDecimal(v)  => extractDoubleValueOrThrow(v, Json(JDecimal(v))).get
       case JNull        => throw JsonElementIsNullException(path)
       case JNothing     => throw JsonPathDoesntExistException(path)
       case other        => throw UnexpectedJsonElementException("double", Json(other))
@@ -132,12 +124,10 @@ trait Extraction extends ExtractionHelper {
 
   def extractDoubleOpt(path: String): Option[Double] = {
     this(path).node match {
-      case JInt(v)      => extractDoubleOrThrow(v, Json(JInt(v)))
+      case JInt(v)      => extractDoubleValue(v)
       case JDouble(v)   => Some(v)
-      case JDecimal(v)  => extractDoubleOrThrow(v, Json(JDecimal(v)))
-      case JNull        => None
-      case JNothing     => None
-      case other        => throw UnexpectedJsonElementException("double", Json(other))
+      case JDecimal(v)  => extractDoubleValue(v)
+      case _            => None
     }
   }
 
@@ -157,9 +147,7 @@ trait Extraction extends ExtractionHelper {
       case JInt(v)      => Some(BigDecimal(v))
       case JDouble(v)   => Some(BigDecimal(v))
       case JDecimal(v)  => Some(v)
-      case JNull        => None
-      case JNothing     => None
-      case other        => throw UnexpectedJsonElementException("big decimal", Json(other))
+      case _            => None
     }
   }
 
@@ -183,9 +171,7 @@ trait Extraction extends ExtractionHelper {
       case JInt(v)      => Some(v.toString)
       case JDouble(v)   => Some(String.valueOf(v))
       case JBool(v)     => Some(String.valueOf(v))
-      case JNull        => None
-      case JNothing     => None
-      case other        => throw UnexpectedJsonElementException("string", Json(other))
+      case _            => None
     }
   }
 

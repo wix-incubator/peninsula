@@ -21,7 +21,7 @@ trait ExtractionHelper {
     def toDouble: Double
   }
 
-  def extractIntOrThrow(v: IntConvertible, json: Json): Option[Int] = {
+  def extractIntValueOrThrow(v: IntConvertible, json: Json): Option[Int] = {
     extractIntValue(v) match {
       case v: Some[Int] => v
       case None => throw UnexpectedJsonElementException("integer", json)
@@ -36,18 +36,22 @@ trait ExtractionHelper {
     }
   }
 
-  def extractBigIntOrThrow(v: BigDecimal, json: Json): Option[BigInt] = {
-    if (v.isValidLong) {
-       v.toBigIntExact() match {
-        case v: Some[BigInt] => v
-        case None => throw UnexpectedJsonElementException("big integer", json)
-      }
-    } else {
-      throw UnexpectedJsonElementException("big integer", json)
+  def extractBigIntValueOrThrow(v: BigDecimal, json: Json): Option[BigInt] = {
+    extractBigIntValue(v) match {
+      case v: Some[BigInt] => v
+      case None => throw UnexpectedJsonElementException("big integer", json)
     }
   }
 
-  def extractLongOrThrow(v: LongConvertible, json: Json): Option[Long] = {
+  def extractBigIntValue(v: BigDecimal): Option[BigInt] = {
+    if (v.isValidLong) {
+      v.toBigIntExact()
+    } else {
+      None
+    }
+  }
+
+  def extractLongValueOrThrow(v: LongConvertible, json: Json): Option[Long] = {
     extractLongValue(v) match {
       case v: Some[Long] => v
       case None => throw UnexpectedJsonElementException("long", json)
@@ -62,7 +66,7 @@ trait ExtractionHelper {
     }
   }
 
-  def extractDoubleOrThrow(v: DoubleConvertible, json: Json): Option[Double] = {
+  def extractDoubleValueOrThrow(v: DoubleConvertible, json: Json): Option[Double] = {
     extractDoubleValue(v) match {
       case v: Some[Double] => v
       case None => throw UnexpectedJsonElementException("double", json)

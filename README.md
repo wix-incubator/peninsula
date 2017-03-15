@@ -327,7 +327,7 @@ There are different methods, which allow you to extract values and structures fr
 
 Methods described below look for element in specified path and return element's value in case it either has appropriate type or can be converted to this type. 
 In all other cases methods throw an exception:
-* `JsonPathDoesntExistException` if path doesnt's exist
+* `JsonPathDoesntExistException` if path doesn't exist
 * `JsonElementIsNullException` if element's value is null
 * `UnexpectedJsonElementException` if element's value has incorrect type 
 
