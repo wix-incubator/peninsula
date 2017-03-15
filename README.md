@@ -90,7 +90,7 @@ items.extract[Seq[String]]("name")
 result: Seq("tomatoes", "snickers")
 ```
 
-[Here](#API reference)you can find comprehensive list of extraction methods.
+[Here](README.md/#api-reference)you can find comprehensive list of extraction methods.
 
 #### Basic Json Transformation
 Build a transformation configuration to describe the rules that later can be used
