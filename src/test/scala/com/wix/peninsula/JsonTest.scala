@@ -341,6 +341,20 @@ class JsonTest extends SpecificationWithJUnit {
       json("something").exists() mustEqual false
     }
 
+    "Check if json contains string value" in {
+      val json = Json.parse("""{"status": "success"}""")
+
+      json("status").contains("success") mustEqual true
+      json("status").contains("failure") mustEqual false
+    }
+
+    "Check if value is null" in {
+      val json = Json.parse("""{"status": null, "id": 1}""")
+      json("status").isNull mustEqual true
+      json("error").isNull mustEqual false
+      json("id").isNull mustEqual false
+    }
+
   }
 
 }

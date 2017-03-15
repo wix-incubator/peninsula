@@ -14,6 +14,14 @@ case class Json(node: JValue = JObject(), implicit val formats: DefaultFormats =
     case _        => true
   }
 
+  def contains(value: String): Boolean = {
+    extractStringOpt.contains(value)
+  }
+
+  def isNull(): Boolean = this.node match {
+    case JNull => true
+    case _     => false
+  }
 
   def only(fieldNames: Set[String]): Json = this.node match {
     case JObject(fields) => Json(JObject(fields.filter( f => fieldNames.contains(f._1))))

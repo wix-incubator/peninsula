@@ -165,7 +165,11 @@ trait Extraction extends ExtractionHelper {
   }
 
   def extractStringOpt(path: String): Option[String] = {
-    this(path).node match {
+    this(path).extractStringOpt
+  }
+
+  protected def extractStringOpt: Option[String] = {
+    this.node match {
       case JString(v)   => Some(v)
       case JDecimal(v)  => Some(v.toString)
       case JInt(v)      => Some(v.toString)
