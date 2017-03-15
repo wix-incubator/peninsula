@@ -11,6 +11,7 @@ val json = Json.parse(
     {
       "id": 1,
       "name": "John",
+      "mobile": null,
       "location": {"city": "Vilnius", "country": "LT"},
       "customer": { "id": 1, "name": "John"},
       "items": [{"name": "tomatoes", "sale": true}, {"name": "snickers", "sale": false}]
@@ -36,6 +37,17 @@ val json = Json.parse(
     items.extractString("(0).name") mustEqual "tomatoes"
     items.extractString("(1).name") mustEqual "snickers"
     items.extract[Seq[String]]("name") mustEqual Seq("tomatoes", "snickers")
+  }
+
+  "Inspections" in {
+    json("location.city").exists mustEqual true
+    json("location.postCode").exists mustEqual false
+    json("items(1).name").exists mustEqual true
+
+    json("items(1).name").contains("snickers") mustEqual true
+
+    json("id").isNull() mustEqual false
+    json("mobile").isNull() mustEqual true
   }
 
   "Basic Json transformation" in {
