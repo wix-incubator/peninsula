@@ -238,10 +238,14 @@ case class Json(node: JValue = JObject(), implicit val formats: DefaultFormats =
   private def readFromPath(json: JValue, path: String): JValue = {
     val pathSeq: Array[String] = path.split("\\.")
     pathSeq.foldLeft(json) { (a: JValue, pathElementStr: String) => {
-        JsonPathElement.parse(pathElementStr) match {
-          case JsonPathElement(Some(name), None)        => a \ name
-          case JsonPathElement(Some(name), Some(index)) => (a \ name) (index)
-          case JsonPathElement(None, Some(index))       => a (index)
+        try {
+          JsonPathElement.parse(pathElementStr) match {
+            case JsonPathElement(Some(name), None)        => a \ name
+            case JsonPathElement(Some(name), Some(index)) => (a \ name) (index)
+            case JsonPathElement(None, Some(index))       => a (index)
+          }
+        } catch {
+          case _: Exception => JNothing
         }
       }
     }
