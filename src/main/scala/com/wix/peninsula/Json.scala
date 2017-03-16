@@ -245,7 +245,7 @@ case class Json(node: JValue = JObject(), implicit val formats: DefaultFormats =
             case JsonPathElement(None, Some(index))       => a (index)
           }
         } catch {
-          case _: Exception => JNothing
+          case _: IndexOutOfBoundsException => JNothing
         }
       }
     }
