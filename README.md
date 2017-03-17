@@ -343,7 +343,7 @@ result: com.wix.peninsula.Json =
 
 There are different methods, which allow you to extract values and structures from JSON. They can be divided into two groups.
 
-Methods described below look for element in specified path and return element's value in case it either has appropriate type or can be converted to this type. 
+Methods described below look for element in specified path and return element's value in case it exists, is not null and has appropriate type. 
 In all other cases methods throw an exception:
 * `JsonPathDoesntExistException` if path doesn't exist
 * `JsonElementIsNullException` if element's value is null
@@ -360,16 +360,16 @@ json.extractBigDecimal(path: String): BigDecimal
 json.extractString(path: String): String
 ```
 
-Second group of extraction methods basically has the same functionality except wrapping result to Option().
-They never throw exceptions. Either element's value has appropriate type or can be converted to this type methods return Some(value), otherwise they return None.   
+Second group of extraction methods basically has the same functionality except wrapping result in Try().
+They never throw exceptions, so return Failure instead.   
 
 ```scala
-json.extractOpt[T](path: String): Option[T]
-json.extractBooleanOpt(path: String): Option[Boolean]
-json.extractIntOpt(path: String): Option[Int]
-json.extractBigIntOpt(path: String): Option[BigInt]
-json.extractLongOpt(path: String): Option[Long]
-json.extractDoubleOpt(path: String): Option[Double]
-json.extractBigDecimalOpt(path: String): Option[BigDecimal]
-json.extractStringOpt(path: String): Option[String]
+json.extractTry[T](path: String): Try[T]
+json.extractBooleanTry(path: String): Try[Boolean]
+json.extractIntTry(path: String): Try[Int]
+json.extractBigIntTry(path: String): Try[BigInt]
+json.extractLongTry(path: String): Try[Long]
+json.extractDoubleTry(path: String): Try[Double]
+json.extractBigDecimalTry(path: String): Try[BigDecimal]
+json.extractStringTry(path: String): Try[String]
 ```
