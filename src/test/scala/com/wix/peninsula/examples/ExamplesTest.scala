@@ -2,7 +2,10 @@ package com.wix.peninsula.examples
 
 import com.wix.peninsula.Json
 import com.wix.peninsula.domain.{Item, Person}
+import com.wix.peninsula.exceptions.JsonPathDoesntExistException
 import org.specs2.mutable.SpecificationWithJUnit
+
+import scala.util.Success
 
 class ExamplesTest extends SpecificationWithJUnit {
 
@@ -20,8 +23,8 @@ val json = Json.parse(
 
   "Extraction" in {
     json.extractString("location.city") mustEqual "Vilnius"
-    json.extractStringOpt("location.city") mustEqual Some("Vilnius")
-    json.extractStringOpt("location.postCode") mustEqual None
+    json.extractStringTry("location.city") mustEqual Success("Vilnius")
+    json.extractStringTry("location.postCode") must beFailedTry.withThrowable[JsonPathDoesntExistException]
     json.extract[Person]("customer") mustEqual Person(id = 1, name = "John")
     json.extract[Seq[Boolean]]("items.sale") mustEqual Seq(true, false)
     json.extract[Seq[Item]]("items") mustEqual Seq(Item(name = "tomatoes", sale = true), Item(name = "snickers", sale = false))

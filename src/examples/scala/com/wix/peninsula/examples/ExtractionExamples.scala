@@ -79,12 +79,12 @@ object WeirdUserDatabase extends App {
 
   val json = Json.parse(jsonStr)
 
-  println(""""uuid1" is extracted as """ + json.extractStringOpt("wix_users(0).id"))
-  println("""2 is extracted as """ + json.extractStringOpt("wix_users(1).id"))
-  println("""true is extracted as """ + json.extractStringOpt("wix_users(2).id"))
-  println("""null is extracted as """ + json.extractStringOpt("wix_users(3).id"))
-  println("""{";": "truncate table 'users'"} is extracted as """ + json.extractStringOpt("wix_users(4).id"))
-  println("""nonexistent element is extracted as """ + json.extractStringOpt("wix_users(5).id"))
+  println(""""uuid1" is extracted as """ + json.extractStringTry("wix_users(0).id"))
+  println("""2 is extracted as """ + json.extractStringTry("wix_users(1).id"))
+  println("""true is extracted as """ + json.extractStringTry("wix_users(2).id"))
+  println("""null is extracted as """ + json.extractStringTry("wix_users(3).id"))
+  println("""{";": "truncate table 'users'"} is extracted as """ + json.extractStringTry("wix_users(4).id"))
+  println("""nonexistent element is extracted as """ + json.extractStringTry("wix_users(5).id"))
 
 }
 

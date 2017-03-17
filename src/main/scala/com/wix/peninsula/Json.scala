@@ -6,6 +6,7 @@ import org.json4s._
 import org.json4s.jackson.JsonMethods
 
 import scala.PartialFunction._
+import scala.util.{Failure, Success}
 
 case class Json(node: JValue = JObject(), implicit val formats: DefaultFormats = DefaultFormats) extends Extraction {
 
@@ -28,7 +29,10 @@ case class Json(node: JValue = JObject(), implicit val formats: DefaultFormats =
   }
 
   def contains(value: String): Boolean = {
-    extractStringOpt.contains(value)
+    extractStringTry match {
+      case Success(v) => v == value
+      case Failure(_) => false
+    }
   }
 
   def contains(path: String, value: String): Boolean = {

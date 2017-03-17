@@ -3,6 +3,7 @@ package com.wix.peninsula
 import com.wix.peninsula.exceptions.UnexpectedJsonElementException
 
 import language.reflectiveCalls
+import scala.util.{Failure, Success, Try}
 
 trait ExtractionHelper {
 
@@ -16,15 +17,10 @@ trait ExtractionHelper {
     def toLong: Long
   }
 
-  type DoubleConvertible = {
-    def isValidDouble: Boolean
-    def toDouble: Double
-  }
-
-  def extractIntValueOrThrow(v: IntConvertible, json: Json): Option[Int] = {
+  def tryExtractIntValue(v: IntConvertible, json: Json): Try[Int] = {
     extractIntValue(v) match {
-      case v: Some[Int] => v
-      case None => throw UnexpectedJsonElementException("integer", json)
+      case Some(intVal) => Success(intVal)
+      case None => Failure(UnexpectedJsonElementException("integer", json))
     }
   }
 
@@ -36,46 +32,16 @@ trait ExtractionHelper {
     }
   }
 
-  def extractBigIntValueOrThrow(v: BigDecimal, json: Json): Option[BigInt] = {
-    extractBigIntValue(v) match {
-      case v: Some[BigInt] => v
-      case None => throw UnexpectedJsonElementException("big integer", json)
-    }
-  }
-
-  def extractBigIntValue(v: BigDecimal): Option[BigInt] = {
-    if (v.isValidLong) {
-      v.toBigIntExact()
-    } else {
-      None
-    }
-  }
-
-  def extractLongValueOrThrow(v: LongConvertible, json: Json): Option[Long] = {
+  def tryExtractLongValue(v: LongConvertible, json: Json): Try[Long] = {
     extractLongValue(v) match {
-      case v: Some[Long] => v
-      case None => throw UnexpectedJsonElementException("long", json)
+      case Some(longValue) => Success(longValue)
+      case None => Failure(UnexpectedJsonElementException("long", json))
     }
   }
 
   def extractLongValue(v: LongConvertible): Option[Long] = {
     if (v.isValidLong) {
       Some(v.toLong)
-    } else {
-      None
-    }
-  }
-
-  def extractDoubleValueOrThrow(v: DoubleConvertible, json: Json): Option[Double] = {
-    extractDoubleValue(v) match {
-      case v: Some[Double] => v
-      case None => throw UnexpectedJsonElementException("double", json)
-    }
-  }
-
-  def extractDoubleValue(v: DoubleConvertible): Option[Double] = {
-    if (v.isValidDouble) {
-      Some(v.toDouble)
     } else {
       None
     }

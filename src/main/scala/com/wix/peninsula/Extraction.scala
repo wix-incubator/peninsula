@@ -3,19 +3,25 @@ package com.wix.peninsula
 import com.wix.peninsula.exceptions.{JsonElementIsNullException, JsonPathDoesntExistException, UnexpectedJsonElementException}
 import org.json4s.JsonAST._
 
+import scala.util.{Failure, Success, Try}
+
 trait Extraction extends ExtractionHelper {
 
   this: Json =>
 
   def extract[T: Manifest]: T = {
-    node.extract[T]
+    node match {
+      case JNull    => throw JsonElementIsNullException()
+      case JNothing => throw JsonPathDoesntExistException()
+      case other    => other.extract[T]
+    }
   }
 
-  def extractOpt[T: Manifest]: Option[T] = {
+  def extractTry[T: Manifest]: Try[T] = {
     node match {
-      case JNull    => None
-      case JNothing => None
-      case other    => Some(other.extract[T])
+      case JNull    => Failure(JsonElementIsNullException())
+      case JNothing => Failure(JsonPathDoesntExistException())
+      case other    => Success(other.extract[T])
     }
   }
 
@@ -27,11 +33,11 @@ trait Extraction extends ExtractionHelper {
     }
   }
 
-  def extractOpt[T: Manifest](path: String): Option[T] = {
+  def extractTry[T: Manifest](path: String): Try[T] = {
     this(path).node match {
-      case JNull    => None
-      case JNothing => None
-      case other    => Some(other.extract[T])
+      case JNull    => Failure(JsonElementIsNullException(path))
+      case JNothing => Failure(JsonPathDoesntExistException(path))
+      case other    => Success(other.extract[T])
     }
   }
 
@@ -44,97 +50,89 @@ trait Extraction extends ExtractionHelper {
     }
   }
 
-  def extractBooleanOpt(path: String): Option[Boolean] = {
+  def extractBooleanTry(path: String): Try[Boolean] = {
     this(path).node match {
-      case JBool(v) => Some(v)
-      case _        => None
+      case JBool(v) => Success(v)
+      case JNull    => Failure(JsonElementIsNullException(path))
+      case JNothing => Failure(JsonPathDoesntExistException(path))
+      case other    => Failure(UnexpectedJsonElementException("boolean", Json(other)))
     }
   }
 
   def extractInt(path: String): Int = {
     this(path).node match {
-      case JInt(v)      => extractIntValueOrThrow(v, Json(JInt(v))).get
-      case JDouble(v)   => extractIntValueOrThrow(BigDecimal(v), Json(JDouble(v))).get
-      case JDecimal(v)  => extractIntValueOrThrow(v, Json(JDecimal(v))).get
+      case JInt(v)      => tryExtractIntValue(v, Json(JInt(v))).get
       case JNull        => throw JsonElementIsNullException(path)
       case JNothing     => throw JsonPathDoesntExistException(path)
       case other        => throw UnexpectedJsonElementException("integer", Json(other))
     }
   }
 
-  def extractIntOpt(path: String): Option[Int] = {
+  def extractIntTry(path: String): Try[Int] = {
     this(path).node match {
-      case JInt(v)      => extractIntValue(v)
-      case JDouble(v)   => extractIntValue(BigDecimal(v))
-      case JDecimal(v)  => extractIntValue(v)
-      case _            => None
+      case JInt(v)      => tryExtractIntValue(v, Json(JInt(v)))
+      case JNull        => Failure(JsonElementIsNullException(path))
+      case JNothing     => Failure(JsonPathDoesntExistException(path))
+      case other        => Failure(UnexpectedJsonElementException("integer", Json(other)))
     }
   }
 
   def extractBigInt(path: String): BigInt = {
     this(path).node match {
       case JInt(v)      => v
-      case JDouble(v)   => extractBigIntValueOrThrow(BigDecimal(v), Json(JDouble(v))).get
-      case JDecimal(v)  => extractBigIntValueOrThrow(v, Json(JDecimal(v))).get
       case JNull        => throw JsonElementIsNullException(path)
       case JNothing     => throw JsonPathDoesntExistException(path)
       case other        => throw UnexpectedJsonElementException("big integer", Json(other))
     }
   }
 
-  def extractBigIntOpt(path: String): Option[BigInt] = {
+  def extractBigIntTry(path: String): Try[BigInt] = {
     this(path).node match {
-      case JInt(v)      => Some(v)
-      case JDouble(v)   => extractBigIntValue(BigDecimal(v))
-      case JDecimal(v)  => extractBigIntValue(v)
-      case _            => None
+      case JInt(v)      => Success(v)
+      case JNull        => Failure(JsonElementIsNullException(path))
+      case JNothing     => Failure(JsonPathDoesntExistException(path))
+      case other        => Failure(UnexpectedJsonElementException("big integer", Json(other)))
     }
   }
 
   def extractLong(path: String): Long = {
     this(path).node match {
-      case JInt(v)      => extractLongValueOrThrow(v, Json(JInt(v))).get
-      case JDouble(v)   => extractLongValueOrThrow(BigDecimal(v), Json(JDouble(v))).get
-      case JDecimal(v)  => extractLongValueOrThrow(v, Json(JDecimal(v))).get
+      case JInt(v)      => tryExtractLongValue(v, Json(JInt(v))).get
       case JNull        => throw JsonElementIsNullException(path)
       case JNothing     => throw JsonPathDoesntExistException(path)
       case other        => throw UnexpectedJsonElementException("long", Json(other))
     }
   }
 
-  def extractLongOpt(path: String): Option[Long] = {
+  def extractLongTry(path: String): Try[Long] = {
     this(path).node match {
-      case JInt(v)      => extractLongValue(v)
-      case JDouble(v)   => extractLongValue(BigDecimal(v))
-      case JDecimal(v)  => extractLongValue(v)
-      case _            => None
+      case JInt(v)      => tryExtractLongValue(v, Json(JInt(v)))
+      case JNull        => Failure(JsonElementIsNullException(path))
+      case JNothing     => Failure(JsonPathDoesntExistException(path))
+      case other        => Failure(UnexpectedJsonElementException("long", Json(other)))
     }
   }
 
   def extractDouble(path: String): Double = {
     this(path).node match {
-      case JInt(v)      => extractDoubleValueOrThrow(v, Json(JInt(v))).get
       case JDouble(v)   => v
-      case JDecimal(v)  => extractDoubleValueOrThrow(v, Json(JDecimal(v))).get
       case JNull        => throw JsonElementIsNullException(path)
       case JNothing     => throw JsonPathDoesntExistException(path)
       case other        => throw UnexpectedJsonElementException("double", Json(other))
     }
   }
 
-  def extractDoubleOpt(path: String): Option[Double] = {
+  def extractDoubleTry(path: String): Try[Double] = {
     this(path).node match {
-      case JInt(v)      => extractDoubleValue(v)
-      case JDouble(v)   => Some(v)
-      case JDecimal(v)  => extractDoubleValue(v)
-      case _            => None
+      case JDouble(v)   => Success(v)
+      case JNull        => Failure(JsonElementIsNullException(path))
+      case JNothing     => Failure(JsonPathDoesntExistException(path))
+      case other        => Failure(UnexpectedJsonElementException("double", Json(other)))
     }
   }
 
   def extractBigDecimal(path: String): BigDecimal = {
     this(path).node match {
-      case JInt(v)      => BigDecimal(v)
-      case JDouble(v)   => BigDecimal(v)
       case JDecimal(v)  => v
       case JNull        => throw JsonElementIsNullException(path)
       case JNothing     => throw JsonPathDoesntExistException(path)
@@ -142,40 +140,34 @@ trait Extraction extends ExtractionHelper {
     }
   }
 
-  def extractBigDecimalOpt(path: String): Option[BigDecimal] = {
+  def extractBigDecimalTry(path: String): Try[BigDecimal] = {
     this(path).node match {
-      case JInt(v)      => Some(BigDecimal(v))
-      case JDouble(v)   => Some(BigDecimal(v))
-      case JDecimal(v)  => Some(v)
-      case _            => None
+      case JDecimal(v)  => Success(v)
+      case JNull        => Failure(JsonElementIsNullException(path))
+      case JNothing     => Failure(JsonPathDoesntExistException(path))
+      case other        => Failure(UnexpectedJsonElementException("big decimal", Json(other)))
     }
   }
 
   def extractString(path: String): String = {
     this(path).node match {
       case JString(v)   => v
-      case JDecimal(v)  => v.toString
-      case JInt(v)      => v.toString
-      case JDouble(v)   => String.valueOf(v)
-      case JBool(v)     => String.valueOf(v)
       case JNull        => throw JsonElementIsNullException(path)
       case JNothing     => throw JsonPathDoesntExistException(path)
       case other        => throw UnexpectedJsonElementException("string", Json(other))
     }
   }
 
-  def extractStringOpt(path: String): Option[String] = {
-    this(path).extractStringOpt
+  def extractStringTry(path: String): Try[String] = {
+    this(path).extractStringTry
   }
 
-  protected def extractStringOpt: Option[String] = {
+  protected def extractStringTry: Try[String] = {
     this.node match {
-      case JString(v)   => Some(v)
-      case JDecimal(v)  => Some(v.toString)
-      case JInt(v)      => Some(v.toString)
-      case JDouble(v)   => Some(String.valueOf(v))
-      case JBool(v)     => Some(String.valueOf(v))
-      case _            => None
+      case JString(v)   => Success(v)
+      case JNull        => Failure(JsonElementIsNullException())
+      case JNothing     => Failure(JsonPathDoesntExistException())
+      case other        => Failure(UnexpectedJsonElementException("string", Json(other)))
     }
   }
 
