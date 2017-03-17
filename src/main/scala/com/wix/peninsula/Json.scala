@@ -6,38 +6,9 @@ import org.json4s._
 import org.json4s.jackson.JsonMethods
 
 import scala.PartialFunction._
-import scala.util.{Failure, Success}
 
-case class Json(node: JValue = JObject(), implicit val formats: DefaultFormats = DefaultFormats) extends Extraction {
-
-  def exists: Boolean = this.node match {
-    case JNothing => false
-    case _        => true
-  }
-
-  def exists(path: String): Boolean = {
-    this(path).exists
-  }
-
-  def isNull: Boolean = this.node match {
-    case JNull => true
-    case _     => false
-  }
-
-  def isNull(path: String): Boolean = {
-    this(path).isNull
-  }
-
-  def contains(value: String): Boolean = {
-    extractStringTry match {
-      case Success(v) => v == value
-      case Failure(_) => false
-    }
-  }
-
-  def contains(path: String, value: String): Boolean = {
-    this(path).contains(value)
-  }
+case class Json(node: JValue = JObject(), implicit val formats: DefaultFormats = DefaultFormats)
+  extends Extraction with Inspection {
 
   def only(fieldNames: Set[String]): Json = this.node match {
     case JObject(fields) => Json(JObject(fields.filter( f => fieldNames.contains(f._1))))
