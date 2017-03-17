@@ -341,13 +341,13 @@ result: com.wix.peninsula.Json =
 
 ## API reference
 
-There are different methods, which allow you to extract values and structures from JSON. They can be divided into two groups.
+There are different methods, which allow you to extract values and structures from JSON.
 
 Methods described below look for element in specified path and return element's value in case it exists, is not null and has appropriate type. 
 In all other cases methods throw an exception:
 * `JsonPathDoesntExistException` if path doesn't exist
 * `JsonElementIsNullException` if element's value is null
-* `UnexpectedJsonElementException` if element's value has incorrect type 
+* `UnexpectedJsonElementException` if element's value has incorrect type
 
 ```scala
 json.extract[T](path: String): T
@@ -360,8 +360,7 @@ json.extractBigDecimal(path: String): BigDecimal
 json.extractString(path: String): String
 ```
 
-Second group of extraction methods basically has the same functionality except wrapping result in Try().
-They never throw exceptions, so return Failure instead.   
+There are also extraction methods, which basically have the same functionality except returning Failure instead of throwing exceptions.
 
 ```scala
 json.extractTry[T](path: String): Try[T]
@@ -372,4 +371,25 @@ json.extractLongTry(path: String): Try[Long]
 json.extractDoubleTry(path: String): Try[Double]
 json.extractBigDecimalTry(path: String): Try[BigDecimal]
 json.extractStringTry(path: String): Try[String]
+```
+
+The second group of extraction methods called 'extractAs*' try to either extract value if it exists and has appropriate type or losslessly convert to requested type.
+If mission fails 'extractAs*' methods throw exception, 'extractAs*Try' methods contrariwise return Failure.
+
+```scala
+json.extractAsBoolean(path: String): Boolean
+json.extractAsInt(path: String): Int
+json.extractAsBigInt(path: String): BigInt
+json.extractAsLong(path: String): Long
+json.extractAsDouble(path: String): Double
+json.extractAsBigDecimal(path: String): BigDecimal
+json.extractAsString(path: String): String
+
+json.extractAsBooleanTry(path: String): Try[Boolean]
+json.extractAsIntTry(path: String): Try[Int]
+json.extractAsBigIntTry(path: String): Try[BigInt]
+json.extractAsLongTry(path: String): Try[Long]
+json.extractAsDoubleTry(path: String): Try[Double]
+json.extractAsBigDecimalTry(path: String): Try[BigDecimal]
+json.extractAsStringTry(path: String): Try[String]
 ```
