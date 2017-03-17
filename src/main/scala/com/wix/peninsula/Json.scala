@@ -249,9 +249,9 @@ case class Json(node: JValue = JObject(), implicit val formats: DefaultFormats =
 
 object Json {
 
-  def create(path: String, value: Json): Json = Json(writeToPath(path, value.node))
+  def create(path: String, value: Json): Json = Json(writeToPath(path, value.node), value.formats)
 
-  def parse(json: String): Json = Json(JsonMethods.parse(json))
+  def parse(json: String, formats: DefaultFormats = DefaultFormats): Json = Json(JsonMethods.parse(json), formats)
 
   private def writeToPath(path: String, jValue: JValue): JObject = {
     import org.json4s.JsonDSL._
