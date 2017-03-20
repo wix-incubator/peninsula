@@ -1,6 +1,6 @@
 package com.wix.peninsula.examples
 
-import com.wix.peninsula.Json
+import com.wix.peninsula.{Json, JsonPathElement}
 import com.wix.peninsula.domain.{Item, Person}
 import com.wix.peninsula.exceptions.JsonPathDoesntExistException
 import org.specs2.mutable.SpecificationWithJUnit
@@ -28,7 +28,7 @@ val json = Json.parse(
     json.extract[Person]("customer") mustEqual Person(id = 1, name = "John")
     json.extract[Seq[Boolean]]("items.sale") mustEqual Seq(true, false)
     json.extract[Seq[Item]]("items") mustEqual Seq(Item(name = "tomatoes", sale = true), Item(name = "snickers", sale = false))
-    json.extract[Item]("items(1)") mustEqual Item(name = "snickers", sale = false)
+    json.extract[Item]("items[1]") mustEqual Item(name = "snickers", sale = false)
   }
 
   "Path" in {
@@ -37,17 +37,17 @@ val json = Json.parse(
     location.extractString("country") mustEqual "LT"
 
     val items: Json = json("items")
-    items.extractString("(0).name") mustEqual "tomatoes"
-    items.extractString("(1).name") mustEqual "snickers"
+    items.extractString("[0].name") mustEqual "tomatoes"
+    items.extractString("[1].name") mustEqual "snickers"
     items.extract[Seq[String]]("name") mustEqual Seq("tomatoes", "snickers")
   }
 
   "Inspections" in {
     json("location.city").exists mustEqual true
     json("location.postCode").exists mustEqual false
-    json("items(1).name").exists mustEqual true
+    json("items[1].name").exists mustEqual true
 
-    json("items(1).name").contains("snickers") mustEqual true
+    json("items[1].name").contains("snickers") mustEqual true
 
     json("id").isNull mustEqual false
     json("mobile").isNull mustEqual true

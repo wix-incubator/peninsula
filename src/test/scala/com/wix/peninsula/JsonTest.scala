@@ -1,9 +1,8 @@
 package com.wix.peninsula
 
-import com.wix.peninsula.exceptions.{JsonElementIsNullException, JsonPathDoesntExistException, JsonValidationException, UnexpectedJsonElementException}
+import com.wix.peninsula.exceptions.{JsonValidationException, UnexpectedJsonElementException}
 import CopyConfigFactory._
 import JsonValidators._
-import com.wix.peninsula.domain.Person
 import org.json4s.JsonAST._
 import org.json4s.jackson.JsonMethods._
 import org.specs2.mutable.SpecificationWithJUnit
@@ -325,13 +324,13 @@ class JsonTest extends SpecificationWithJUnit {
     "Find an element of an array by index" in {
       val json = Json.parse("""{"customers": [{ "id": 1, "name": "Hello"}, {"id": 2, "name": "Goodbye"}]} """)
 
-      json("customers(1)") mustEqual Json.parse("""{"id": 2, "name": "Goodbye"}""")
+      json("customers[1]") mustEqual Json.parse("""{"id": 2, "name": "Goodbye"}""")
     }
 
     "Find an element of a top-level array by index" in {
       val json = Json.parse("""[{ "id": 1, "name": "Hello"}, {"id": 2, "name": "Goodbye"}]""")
 
-      json("(1)") mustEqual Json.parse("""{"id": 2, "name": "Goodbye"}""")
+      json("[1]") mustEqual Json.parse("""{"id": 2, "name": "Goodbye"}""")
     }
 
   }

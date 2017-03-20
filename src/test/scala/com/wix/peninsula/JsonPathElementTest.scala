@@ -9,11 +9,11 @@ class JsonPathElementTest extends SpecificationWithJUnit {
   }
 
   "Parse element with index" in {
-    JsonPathElement.parse("hello(32)") mustEqual JsonPathElement(Some("hello"), Some(32))
+    JsonPathElement.parse("hello[32]") mustEqual JsonPathElement(Some("hello"), Some(32))
   }
 
   "Parse index only element" in {
-    JsonPathElement.parse("(32)") mustEqual JsonPathElement(None, Some(32))
+    JsonPathElement.parse("[32]") mustEqual JsonPathElement(None, Some(32))
   }
 
 }

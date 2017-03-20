@@ -4,9 +4,9 @@ case class JsonPathElement(name: Option[String], index: Option[Int])
 
 object JsonPathElement {
 
-  private val SimpleNameRegex    = """(.*[^\)])$""".r
-  private val NameWithIndexRegex = """(.+)\((\d+)\)$""".r
-  private val IndexOnlyRegex     = """^\((\d+)\)$""".r
+  private val SimpleNameRegex    = """(.*[^\]])$""".r
+  private val NameWithIndexRegex = """(.+)\[(\d+)\]$""".r
+  private val IndexOnlyRegex     = """^\[(\d+)\]$""".r
 
 
   def parse(pathItem: String): JsonPathElement = {

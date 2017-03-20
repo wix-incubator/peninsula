@@ -64,7 +64,7 @@ result: Seq(true, false)
 json.extract[Seq[Item]]("items")
 result: Seq(Item(name = "tomatoes", sale = true), Item(name = "snickers", sale = false))
 
-json.extract[Item]("items(1)") 
+json.extract[Item]("items[1]") 
 result: Item(name = "snickers", sale = false)
 ```
 
@@ -80,10 +80,10 @@ result: "LT"
 
 val items: Json = json("items")
 
-items.extractString("(0).name")
+items.extractString("[0].name")
 result: "tomatoes"
 
-items.extractString("(1).name")
+items.extractString("[1].name")
 result: "snickers"
 
 items.extract[Seq[String]]("name")
@@ -98,10 +98,10 @@ result: true
 json("location.postCode").exists
 result: false
 
-json("items(1).name").exists
+json("items[1].name").exists
 result: true
 
-json("items(1).name").contains("snickers")
+json("items[1].name").contains("snickers")
 result: true
 
 json("id").isNull
