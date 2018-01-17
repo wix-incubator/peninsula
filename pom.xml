@@ -13,7 +13,7 @@
   <parent>
     <groupId>com.wix</groupId>
     <artifactId>wix-oss-scala-parent</artifactId>
-    <version>0.38.0</version>
+    <version>0.47.0</version>
   </parent>
 
   <developers>
@@ -48,41 +48,24 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-  
-  <properties>
-    <scala.dependencies.version>2.11</scala.dependencies.version>
-    <scala.library.version>2.11.7</scala.library.version>
-  </properties>
 
   <dependencies>
     <dependency>
-      <groupId>org.scala-lang</groupId>
-      <artifactId>scala-library</artifactId>
-      <version>${scala.library.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.json4s</groupId>
       <artifactId>json4s-jackson_${scala.dependencies.version}</artifactId>
-      <version>3.3.0</version>
+      <version>3.4.2</version>
     </dependency>
 
     <dependency>
       <groupId>org.specs2</groupId>
       <artifactId>specs2-core_${scala.dependencies.version}</artifactId>
-      <version>3.7</version>
+      <version>3.8.6</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.specs2</groupId>
       <artifactId>specs2-junit_${scala.dependencies.version}</artifactId>
-      <version>3.7</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.specs2</groupId>
-      <artifactId>specs2_${scala.dependencies.version}</artifactId>
-      <version>3.7</version>
-      <type>pom</type>
+      <version>3.8.6</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
