@@ -121,7 +121,9 @@ case class Json(node: JValue = JObject(), implicit val formats: DefaultFormats =
     else this
   }
 
-  override def toString: String = JsonMethods.pretty(JsonMethods.render(node))
+  override def toString: String =
+    if (node == null || formats == null) s"${this.getClass.getSimpleName}($node,$formats)"
+    else JsonMethods.pretty(JsonMethods.render(node))
 
   def getTypeString: String = node match {
     case _: JObject => "object"
